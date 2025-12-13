@@ -1,0 +1,139 @@
+.top-bar {
+    background: #f8f8f8;
+    padding: 5px 0;
+    font-size: 0.8rem;
+    color: #666;
+    border-bottom: 1px solid #eee;
+}
+
+.top-bar-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-main {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+}
+
+.logo {
+    cursor: pointer;
+}
+
+.logo h1 {
+    font-size: 2.5rem;
+    background: none;
+    color: var(--brand-color);
+    margin: 0;
+    font-family: 'Merriweather', serif;
+    letter-spacing: -1px;
+}
+
+.logo-suffix {
+    color: #222;
+}
+
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+    display: none;
+    /* Hidden by default on desktop */
+}
+
+.desktop-nav {
+    border-top: 1px solid #eee;
+    border-bottom: 2px solid var(--brand-color);
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.nav-item-btn {
+    background: none;
+    border: none;
+    padding: 12px 5px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: var(--font-body);
+    position: relative;
+    transition: color 0.2s;
+}
+
+.nav-item-btn:hover {
+    color: var(--brand-color);
+}
+
+.nav-item-btn.active {
+    font-weight: 700;
+    color: var(--brand-color);
+}
+
+.nav-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--brand-color);
+}
+
+.mobile-dropdown {
+    background: white;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-nav-btn.active {
+    color: var(--brand-color);
+}
+
+@media (max-width: 767px) {
+    .desktop-nav {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+}
