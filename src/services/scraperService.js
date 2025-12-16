@@ -49,14 +49,14 @@ const TEXT_NOISE_EXACT = ['video', 'ảnh'];
 // --- Main Service Functions ---
 
 export const fetchFullArticle = async (url) => {
-    try {
-        if (!url) return null;
+    if (!url) throw new Error("Missing article url");
 
-        // Check cache first
-        if (articleCache.has(url)) {
-            console.log('Serving article from cache:', url);
-            return articleCache.get(url);
-        }
+    // Check cache first
+    if (articleCache.has(url)) {
+        console.log("Serving article from cache:", url);
+        return articleCache.get(url);
+    }
+
 
         // Use local Vite proxy in development for the target domain
         const targetDomain = 'baotintuc.vn'; // Match domain part only
@@ -76,16 +76,13 @@ export const fetchFullArticle = async (url) => {
         const response = await fetch(fetchUrl);
         if (!response.ok) throw new Error('Network response was not ok');
 
-        const html = await response.text();
 
-        // Save to cache
-        articleCache.set(url, html);
+    const html = await response.text();
 
-        return html;
-    } catch (error) {
-        console.error("Error fetching full article:", error);
-        return null;
-    }
+    // Save to cache
+    articleCache.set(url, html);
+
+    return html;
 };
 
 export const parseArticleContent = (html) => {
@@ -93,7 +90,8 @@ export const parseArticleContent = (html) => {
         if (!html) return null;
 
         const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
+        const doc = parser.parseFromString(html, "text/html");
+
 
         const contentElement = findContentElement(doc);
 
@@ -104,6 +102,7 @@ export const parseArticleContent = (html) => {
             cleanupEmptyTags(contentElement);
             standardizeImages(contentElement);
             removeAllInlineStyles(contentElement);
+
 
             return contentElement.innerHTML;
         }

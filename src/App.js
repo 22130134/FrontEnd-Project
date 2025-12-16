@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import HeroSection from './components/HeroSection';
-import NewsList from './components/NewsList';
-import Sidebar from './components/Sidebar';
-import Footer from './components/Footer';
-import NewsDetail from './components/NewsDetail';
-import { fetchFeed, CATEGORIES } from './services/rssService';
-import './styles/global.css';
+import React, { useState, useEffect } from "react";
+import Header from "./components/Header";
+import HeroSection from "./components/HeroSection";
+import NewsList from "./components/NewsList";
+import Sidebar from "./components/Sidebar";
+import Footer from "./components/Footer";
+import NewsDetail from "./components/NewsDetail";
+import StateView from "./components/StateView";
+import { fetchFeed, CATEGORIES } from "./services/rssService";
+import "./styles/global.css";
 
 function App() {
     const [currentCategory, setCurrentCategory] = useState(CATEGORIES[0].id);
@@ -14,38 +15,49 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [selectedArticle, setSelectedArticle] = useState(null);
+    const [retryKey, setRetryKey] = useState(0);
+
+
     // New state for Detail View
     const [selectedArticle, setSelectedArticle] = useState(null);
-
+    //
     useEffect(() => {
+        let mounted = true;
+
         const loadNews = async () => {
             setLoading(true);
             setError(null);
 
-            // If we change category, reset detail view
             setSelectedArticle(null);
             window.scrollTo(0, 0);
 
             try {
-                const category = CATEGORIES.find(c => c.id === currentCategory);
-                if (category) {
-                    const data = await fetchFeed(category.url);
-                    if (data && data.items) {
-                        setNews(data.items);
-                    } else {
-                        throw new Error('No data received');
-                    }
-                }
+                const category = CATEGORIES.find((c) => c.id === currentCategory);
+                if (!category) throw new Error("Category not found");
+
+                const data = await fetchFeed(category.url);
+                const items = data?.items || [];
+
+                if (!mounted) return;
+
+                setNews(items);
             } catch (err) {
+                if (!mounted) return;
                 console.error(err);
-                setError('Failed to load news. Please try again later.');
+                setNews([]);
+                setError(err instanceof Error ? err.message : "Failed to load news. Please try again later.");
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
         };
 
         loadNews();
-    }, [currentCategory]);
+
+        return () => {
+            mounted = false;
+        };
+    }, [currentCategory, retryKey]);
 
     const handleArticleClick = (item) => {
         setSelectedArticle(item);
@@ -57,29 +69,33 @@ function App() {
         window.scrollTo(0, 0);
     };
 
-    // Logic: 
     const heroItems = news.slice(0, 3);
     const mainFeedItems = news.slice(3, 10);
     const sidebarItems = news.slice(10, 20);
 
+    const showEmpty = !loading && !error && (!news || news.length === 0);
+
     return (
         <div className="app">
-            <Header
-                currentCategory={currentCategory}
-                onCategoryChange={setCurrentCategory}
-            />
-
-            {error && (
-                <div className="container" style={{ textAlign: 'center', padding: '4rem', color: 'red' }}>
-                    <h2>Oops!</h2>
-                    <p>{error}</p>
-                </div>
-            )}
+            <Header currentCategory={currentCategory} onCategoryChange={setCurrentCategory} />
 
             {loading ? (
-                <div className="container" style={{ textAlign: 'center', padding: '100px 0' }}>
-                    <div className="spinner"></div>
-                    <style>{`.spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--brand-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                <div className="container" style={{ padding: "40px 0" }}>
+                    <StateView state="loading" title="Đang tải tin tức..." message="Vui lòng chờ một chút." />
+                </div>
+            ) : error ? (
+                <div className="container" style={{ padding: "40px 0" }}>
+                    <StateView
+                        state="error"
+                        title="Không tải được tin tức"
+                        message="Vui lòng thử lại. Nếu vẫn lỗi, có thể dịch vụ RSS đang quá tải."
+                        retryText="Thử lại"
+                        onRetry={() => setRetryKey((k) => k + 1)}
+                    />
+                </div>
+            ) : showEmpty ? (
+                <div className="container" style={{ padding: "40px 0" }}>
+                    <StateView state="empty" title="Chưa có tin" message="Danh mục này hiện chưa có bài viết để hiển thị." />
                 </div>
             ) : (
                 <>
@@ -90,15 +106,20 @@ function App() {
                             <HeroSection items={heroItems} onArticleClick={handleArticleClick} />
 
                             <div className="container">
-                                <div className="main-layout" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '40px' }}>
-                                    {/* Main Content Column */}
-                                    <div style={{ gridColumn: 'span 8' }} className="content-col">
+                                <div
+                                    className="main-layout"
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "repeat(12, 1fr)",
+                                        gap: "40px",
+                                    }}
+                                >
+                                    <div style={{ gridColumn: "span 8" }} className="content-col">
                                         <h3 className="section-title">Tin nổi bật</h3>
                                         <NewsList items={mainFeedItems} onArticleClick={handleArticleClick} />
                                     </div>
 
-                                    {/* Sidebar Column */}
-                                    <div style={{ gridColumn: 'span 4' }} className="sidebar-col">
+                                    <div style={{ gridColumn: "span 4" }} className="sidebar-col">
                                         <Sidebar latestItems={sidebarItems} onArticleClick={handleArticleClick} />
                                     </div>
                                 </div>
@@ -112,8 +133,8 @@ function App() {
 
             <style>{`
         @media (max-width: 900px) {
-            .content-col { grid-column: span 12 !important; }
-            .sidebar-col { grid-column: span 12 !important; margin-top: 2rem; }
+          .content-col { grid-column: span 12 !important; }
+          .sidebar-col { grid-column: span 12 !important; margin-top: 2rem; }
         }
       `}</style>
         </div>
