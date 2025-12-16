@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
-import './css/NewsDetail.css';
+import './NewsDetail.css';
 
 
 const NewsDetail = ({ item, onBack }) => {

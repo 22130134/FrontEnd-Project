@@ -1,6 +1,6 @@
 import React from 'react';
 import { CATEGORIES } from '../services/rssService';
-import './css/Footer.css';
+import './Footer.css';
 
 const Footer = ({ onCategoryChange }) => {
     return (

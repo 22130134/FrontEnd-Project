@@ -1,5 +1,5 @@
 import React from 'react';
-import './css/NewsList.css';
+import './NewsList.css';
 
 const NewsCard = ({ item, onClick }) => {
     // Attempt to parse image from description if RSS doesn't have it directly
