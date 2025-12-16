@@ -1,5 +1,5 @@
 import React from 'react';
-import './HeroSection.css';
+import './css/HeroSection.css';
 
 const HeroItem = ({ item, isMain, onClick }) => {
     if (!item) return null;

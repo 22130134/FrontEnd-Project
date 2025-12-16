@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
-import './NewsDetail.css';
+import './css/NewsDetail.css';
 
 const NewsDetail = ({ item, onBack }) => {
     const [fullContent, setFullContent] = useState(null);
