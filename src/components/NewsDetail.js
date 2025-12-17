@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
-import StateView from "./StateView";
-import { fetchFullArticle, parseArticleContent } from "../services/scraperService";
-import "./NewsDetail.css";
+
+import React, { useEffect, useState } from 'react';
+import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
+import StateView from './StateView';
+import './NewsDetail.css';
+
 
 const MAX_RETRY = 3;
 
@@ -86,16 +88,16 @@ const NewsDetail = ({ item, onBack }) => {
             <h1 className="detail-title">{item.title}</h1>
 
             <div className="detail-meta">
-        <span>
-          {new Date(item.pubDate).toLocaleDateString("vi-VN", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-          })}
-        </span>
+                <span>
+                    {new Date(item.pubDate).toLocaleDateString("vi-VN", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}
+                </span>
                 <span>Nguồn: Baotintuc.vn</span>
             </div>
 
