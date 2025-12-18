@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import NewsList from "./components/NewsList";
@@ -6,7 +6,7 @@ import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import NewsDetail from "./components/NewsDetail";
 import StateView from "./components/StateView";
-import { fetchFeed, CATEGORIES } from "./services/rssService";
+import {fetchFeed, CATEGORIES} from "./services/rssService";
 import "./styles/global.css";
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
     const [selectedArticle, setSelectedArticle] = useState(null);
     const [retryKey, setRetryKey] = useState(0);
 
-    // ✅ NEW: thời điểm cập nhật dữ liệu
+    //NEW: thời điểm cập nhật dữ liệu
     const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ function App() {
 
                 setNews(items);
 
-                // ✅ LƯU THỜI ĐIỂM FETCH XONG
+                //LƯU THỜI ĐIỂM FETCH XONG
                 setLastUpdated(new Date());
             } catch (err) {
                 if (!mounted) return;
@@ -83,7 +83,7 @@ function App() {
 
     return (
         <div className="app">
-            {/* ✅ truyền lastUpdated xuống Header */}
+            {/*truyền lastUpdated xuống Header */}
             <Header
                 currentCategory={currentCategory}
                 onCategoryChange={setCurrentCategory}
@@ -99,7 +99,7 @@ function App() {
                     />
                 </div>
             ) : error ? (
-                <div className="container" style={{ padding: "40px 0" }}>
+                <div className="container" style={{padding: "40px 0"}}>
                     <StateView
                         state="error"
                         title="Không tải được tin tức"
@@ -119,7 +119,7 @@ function App() {
             ) : (
                 <>
                     {selectedArticle ? (
-                        <NewsDetail item={selectedArticle} onBack={handleBackToHome} />
+                        <NewsDetail item={selectedArticle} onBack={handleBackToHome}/>
                     ) : (
                         <>
                             <HeroSection
@@ -136,7 +136,7 @@ function App() {
                                         gap: "40px",
                                     }}
                                 >
-                                    <div style={{ gridColumn: "span 8" }} className="content-col">
+                                    <div style={{gridColumn: "span 8"}} className="content-col">
                                         <h3 className="section-title">Tin nổi bật</h3>
                                         <NewsList
                                             items={mainFeedItems}
@@ -157,7 +157,7 @@ function App() {
                 </>
             )}
 
-            <Footer onCategoryChange={setCurrentCategory} />
+            <Footer onCategoryChange={setCurrentCategory}/>
 
             <style>{`
         @media (max-width: 900px) {
