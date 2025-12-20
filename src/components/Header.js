@@ -17,8 +17,6 @@ const Header = ({ currentCategory, onCategoryChange, lastUpdated }) => {
                             day: 'numeric'
                         })}
                     </span>
-
-                    {/* ✅ GIỮ DÒNG CŨ + THÊM CẬP NHẬT LÚC */}
                     <span className="top-bar-right">
                         <span>Hợp tác cùng Baotintuc.vn</span>
 
