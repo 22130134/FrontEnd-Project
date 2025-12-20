@@ -11,7 +11,6 @@ export const CATEGORIES = [
 
 ];
 
-// URLs for specific homepage sections
 export const HOME_SECTIONS = [
     { id: 'focus', title: 'Tiêu điểm', url: 'https://baotintuc.vn/tin-moi-nhat.rss' }, // Use latest as focus
     { id: 'thoi-su', title: 'Thời sự', url: 'https://baotintuc.vn/thoi-su.rss' },
