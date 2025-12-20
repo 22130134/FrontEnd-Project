@@ -35,7 +35,6 @@ export const fetchFeed = async (rssUrl) => {
         return { items: [] };
     }
 };
-
 export const fetchAllSections = async () => {
     // Fetch all home sections in parallel
     const promises = HOME_SECTIONS.map(async (section) => {
