@@ -1,3 +1,4 @@
+// UI state handling for loading, empty and error cases
 import React from "react";
 
 export default function StateView({
