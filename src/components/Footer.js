@@ -1,6 +1,6 @@
 import React from 'react';
 import { CATEGORIES } from '../services/rssService';
-import './Footer.css';
+import './css/Footer.css';
 
 const Footer = ({ onCategoryChange }) => {
     return (
@@ -8,35 +8,52 @@ const Footer = ({ onCategoryChange }) => {
             <div className="container">
                 <div className="footer-grid">
                     <div className="footer-brand">
-                        <h3>NewsApp</h3>
-                        <p className="footer-desc">
-                            Trang tin tức tổng hợp nhanh chóng, chính xác và chuyên nghiệp nhất. Cập nhật liên tục 24/7.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 className="footer-heading">Chuyên mục</h4>
-                        <ul className="footer-links">
-                            {CATEGORIES.slice(0, 6).map(cat => (
-                                <li key={cat.id} className="footer-link-item">
-                                    <button
-                                        onClick={() => onCategoryChange(cat.id)}
-                                        className="footer-link-btn"
-                                    >
-                                        {cat.name}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
+                        <span className="footer-logo">BAOTINTUC<span style={{ fontSize: '0.6em' }}>.VN</span></span>
+                        <div className="footer-info-text">
+                            <p><strong>© 2024 Thông tấn xã Việt Nam.</strong></p>
+                            <p>Tổng biên tập: Nguyễn Thị Sự</p>
+                            <p>Số giấy phép: 173/GP-BTTTT cấp ngày 04/04/2022</p>
+                            <p>Tòa soạn: 5 Lý Thường Kiệt, Hà Nội</p>
+                            <p>Điện thoại: (024) 38254231 - Fax: (024) 39330669</p>
+                            <p>Email: baotintuc@vnanet.vn</p>
+                        </div>
                     </div>
 
-                    <div className="footer-info">
-                        <h4 className="footer-heading">Liên hệ</h4>
-                        <p>Email: contact@newsapp.com</p>
-                        <p>Phone: +84 123 456 789</p>
+                    <div className="footer-links-area">
+                        {/* Simulate columns of categories */}
+                        <div className="footer-col">
+                            <h4>Thời sự</h4>
+                            <ul className="footer-links">
+                                <li className="footer-link-item"><button className="footer-link-btn" onClick={() => onCategoryChange('thoi-su')}>Chính trị</button></li>
+                                <li className="footer-link-item"><button className="footer-link-btn" onClick={() => onCategoryChange('xa-hoi')}>Xã hội</button></li>
+                            </ul>
+                        </div>
+                        <div className="footer-col">
+                            <h4>Kinh tế</h4>
+                            <ul className="footer-links">
+                                <li className="footer-link-item"><button className="footer-link-btn" onClick={() => onCategoryChange('kinh-te')}>Thị trường</button></li>
+                                <li className="footer-link-item"><button className="footer-link-btn" onClick={() => onCategoryChange('kinh-te')}>Doanh nghiệp</button></li>
+                            </ul>
+                        </div>
+                        <div className="footer-col">
+                            <h4>Pháp luật</h4>
+                            <ul className="footer-links">
+                                <li className="footer-link-item"><button className="footer-link-btn" onClick={() => onCategoryChange('phap-luat')}>Vụ án</button></li>
+                                <li className="footer-link-item"><button className="footer-link-btn" onClick={() => onCategoryChange('phap-luat')}>Văn bản</button></li>
+                            </ul>
+                        </div>
+                        <div className="footer-col">
+                            <h4>Liên hệ</h4>
+                            <ul className="footer-links">
+                                <li className="footer-link-item"><button className="footer-link-btn">Quảng cáo</button></li>
+                                <li className="footer-link-item"><button className="footer-link-btn">Góp ý</button></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div className="footer-copyright">
-                    © 2024 NewsApp. All rights reserved. Design by AntiGravity.
+
+                <div className="footer-bottom">
+                    <p>Bản quyền thuộc về Báo Tin tức - TTXVN. Cấm sao chép dưới mọi hình thức nếu không có sự chấp thuận bằng văn bản.</p>
                 </div>
             </div>
         </footer>

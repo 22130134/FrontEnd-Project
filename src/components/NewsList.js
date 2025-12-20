@@ -1,5 +1,5 @@
 import React from 'react';
-import './NewsList.css';
+import './css/NewsList.css';
 
 const NewsCard = ({ item, onClick }) => {
     // Attempt to parse image from description if RSS doesn't have it directly
@@ -9,7 +9,7 @@ const NewsCard = ({ item, onClick }) => {
         image = imgMatch ? imgMatch[1] : 'https://placehold.co/600x400?text=News';
     }
 
-    const cleanDesc = item.description?.replace(/<[^>]+>/g, '').substring(0, 150) + '...';
+    const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
     return (
         <div onClick={() => onClick(item)} className="news-card">

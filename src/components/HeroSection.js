@@ -1,5 +1,5 @@
 import React from 'react';
-import './HeroSection.css';
+import './css/HeroSection.css';
 
 const HeroItem = ({ item, isMain, onClick }) => {
     if (!item) return null;
@@ -10,7 +10,7 @@ const HeroItem = ({ item, isMain, onClick }) => {
         image = imgMatch ? imgMatch[1] : 'https://placehold.co/800x600?text=News';
     }
 
-    const cleanDesc = item.description?.replace(/<[^>]+>/g, '').substring(0, isMain ? 200 : 100) + '...';
+    const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
     return (
         <div className="hero-item" onClick={() => onClick(item)}>

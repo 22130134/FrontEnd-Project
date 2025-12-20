@@ -7,25 +7,54 @@ export const CATEGORIES = [
     { name: "Pháp luật", url: "https://baotintuc.vn/phap-luat.rss", id: "phap-luat" },
     { name: "Văn hóa", url: "https://baotintuc.vn/van-hoa.rss", id: "van-hoa" },
     { name: "Giáo dục", url: "https://baotintuc.vn/giao-duc.rss", id: "giao-duc" },
-    { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" },
-    { name: "Giải trí", url: "https://baotintuc.vn/giai-tri.rss", id: "giai-tri" },
+    { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" }
+
+];
+
+// URLs for specific homepage sections
+export const HOME_SECTIONS = [
+    { id: 'focus', title: 'Tiêu điểm', url: 'https://baotintuc.vn/tin-moi-nhat.rss' }, // Use latest as focus
+    { id: 'thoi-su', title: 'Thời sự', url: 'https://baotintuc.vn/thoi-su.rss' },
+    { id: 'the-gioi', title: 'Thế giới', url: 'https://baotintuc.vn/the-gioi.rss' },
+    { id: 'kinh-te', title: 'Kinh tế', url: 'https://baotintuc.vn/kinh-te.rss' },
+    { id: 'xa-hoi', title: 'Xã hội', url: 'https://baotintuc.vn/xa-hoi.rss' },
+    { id: 'phap-luat', title: 'Pháp luật', url: 'https://baotintuc.vn/phap-luat.rss' }
 ];
 
 export const fetchFeed = async (rssUrl) => {
-    if (!rssUrl) throw new Error("Missing rssUrl");
+    // Sử dụng rss2json để chuyển đổi RSS sang JSON
+    const apiKey = 'https://api.rss2json.com/v1/api.json?rss_url=';
+    const url = apiKey + encodeURIComponent(rssUrl);
 
-    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-        throw new Error(`RSS2JSON HTTP ${response.status}`);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log("Lỗi khi lấy dữ liệu:", error);
+        return { items: [] };
     }
+};
 
-    const data = await response.json();
+export const fetchAllSections = async () => {
+    // Fetch all home sections in parallel
+    const promises = HOME_SECTIONS.map(async (section) => {
+        try {
+            const data = await fetchFeed(section.url);
+            return {
+                ...section,
+                items: data.items || [],
+                error: null
+            };
+        } catch (e) {
+            console.error(`Failed to load section ${section.title}`, e);
+            return {
+                ...section,
+                items: [],
+                error: e.message
+            };
+        }
+    });
 
-    if (data.status !== "ok") {
-        throw new Error(data.message || "Failed to fetch feed");
-    }
-
-    return data;
+    return Promise.all(promises);
 };

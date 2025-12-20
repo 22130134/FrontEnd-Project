@@ -1,16 +1,25 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #333;
+  background-color: #fff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Baotintuc.vn Variables */
+  --primary-color: #be0027; /* The specific red used in navigation */
+  --text-color: #333;
+  --link-color: #0056b3;
+  --header-height: 110px;
+  --container-width: 1140px;
+  --bg-gray: #f7f7f7;
+  --border-color: #e5e5e5;
 }
 
 a {

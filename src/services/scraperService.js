@@ -1,6 +1,12 @@
 // Simple in-memory cache to store fetched articles
 const articleCache = new Map();
 
+const PROXIES = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://thingproxy.freeboard.io/fetch/'
+];
+
 export const fetchFullArticle = async (url) => {
     if (!url) throw new Error("Missing article url");
 
@@ -10,20 +16,38 @@ export const fetchFullArticle = async (url) => {
         return articleCache.get(url);
     }
 
+    let lastError = null;
 
-        // Use allorigins.win (or similar) as a proxy to fetch raw HTML
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    for (const proxy of PROXIES) {
+        try {
+            const proxyUrl = `${proxy}${encodeURIComponent(url)}`;
+            console.log(`Trying proxy: ${proxy}...`);
 
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Network response was not ok');
+            const response = await fetch(proxyUrl);
+            if (!response.ok) {
+                console.warn(`Proxy ${proxy} failed with status: ${response.status}`);
+                continue;
+            }
 
+            const html = await response.text();
 
-    const html = await response.text();
+            // Simple validation
+            if (!html || html.trim().length < 50) {
+                console.warn(`Proxy ${proxy} returned empty/invalid content`);
+                continue;
+            }
 
-    // Save to cache
-    articleCache.set(url, html);
+            // Save to cache
+            articleCache.set(url, html);
 
-    return html;
+            return html;
+        } catch (e) {
+            console.warn(`Proxy ${proxy} error:`, e);
+            lastError = e;
+        }
+    }
+
+    throw lastError || new Error("Failed to fetch article from all proxies");
 };
 
 export const parseArticleContent = (html) => {
@@ -51,27 +75,39 @@ export const parseArticleContent = (html) => {
         if (contentElement) {
             // Even inside ".content", valid news sites inject Ads/Related News.
             // We must filter these out to get "Just the content".
-            const unwantedSelectors = [
-                '.relate-news', '.tin-lien-quan', '.box-tin-lien-quan', '.bv-lienquan', // Related news
-                '.ads', '#inpage-ads', '.video-ads', 'div[id^="zone"]', // Ads
-                'script', 'style', 'iframe', // Technical
-                '.box-responsive', '.box-link-news', // Embeds
-                '.social-box', '.box-social', '.sharing', '.tool-box', // Social
-                '.tag', '.tag-box', '.keyword-news', // Tags
-                '.box-comment', '.author-info', '.avatar-content', // Meta
-                '.source', '.related-container', // Misc
-                '.simple-share', '.box-lz', // More social/layout noise
-                '.boxdata', // Specific user request
-                '.right-bar', // Sidebar removal
-                '.content_bottom', '.content-bottom', '.bottom-content', // Bottom content removal
-                '#plhMain_NewsDetail1_divSharelink',
-                '#plhMain_NewsDetail1_divRelation',
-                '.action-link',
-                '.detail-main-img-wrapper',
-                '.article-body',
-                '.lc-bar',
-                '.detail-title'
-            ];
+            const REMOVE_SELECTORS = {
+                related: [
+                    '.relate-news', '.tin-lien-quan', '.box-tin-lien-quan', '.bv-lienquan',
+                    '.related-container', '#plhMain_NewsDetail1_divRelation', '.box-link-news'
+                ],
+                ads: [
+                    '.ads', '#inpage-ads', '.video-ads', 'div[id^="zone"]'
+                ],
+                social: [
+                    '.social-box', '.box-social', '.sharing', '.tool-box',
+                    '.simple-share', '.box-lz', '#plhMain_NewsDetail1_divSharelink'
+                ],
+                meta: [
+                    '.tag', '.tag-box', '.keyword-news',
+                    '.box-comment', // Keep author/source info
+                    '.action-link', '.boxdata'
+                ],
+                layout: [
+                    '.right-bar', '.content_bottom', '.content-bottom', '.bottom-content',
+                    '.box-responsive', '.lc-bar'
+                ],
+                technical: [
+                    'script', 'style', 'iframe'
+                ],
+                // Elements we render separately in NewsDetail, so remove from content to avoid duplication
+                duplicates: [
+                    '.detail-main-img-wrapper',
+                    '.detail-title'
+                    // Allow article-body/content to stay if it's the main wrapper
+                ]
+            };
+
+            const unwantedSelectors = Object.values(REMOVE_SELECTORS).flat();
 
             const unwanted = contentElement.querySelectorAll(unwantedSelectors.join(', '));
             unwanted.forEach(el => el.remove());

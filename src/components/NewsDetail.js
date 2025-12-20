@@ -2,12 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
 import StateView from './StateView';
-import './NewsDetail.css';
+import './css/NewsDetail.css';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const MAX_RETRY = 3;
 
-const NewsDetail = ({ item, onBack }) => {
+const NewsDetail = ({ item: propItem, onBack }) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const item = propItem || location.state?.item;
+
     const [fullContent, setFullContent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,45 +20,54 @@ const NewsDetail = ({ item, onBack }) => {
     const [retryCount, setRetryCount] = useState(0);
     const [retryKey, setRetryKey] = useState(0);
 
+    const handleBack = () => {
+        if (onBack) {
+            onBack();
+        } else {
+            navigate(-1);
+        }
+    };
+
+    // Reset trang thái retry khi đổi bài viết
     useEffect(() => {
         setRetryCount(0);
         setRetryKey(0);
-    }, [item?.link]);
+    }, [item]);
 
+    // Load nội dung bài viết
     useEffect(() => {
-        let mounted = true;
-
         const loadContent = async () => {
             if (!item || !item.link) return;
 
             setLoading(true);
-            setError(null);
-            setFullContent(null);
-
             try {
+                // Lấy nội dung html từ link gốc
                 const html = await fetchFullArticle(item.link);
                 const parsed = parseArticleContent(html);
-
-                if (!mounted) return;
-
-                if (parsed && parsed.trim().length > 0) setFullContent(parsed);
-                else setFullContent(null);
+                setFullContent(parsed);
             } catch (e) {
-                if (!mounted) return;
+                console.log(e);
                 setError(e);
-                setFullContent(null);
-            } finally {
-                if (mounted) setLoading(false);
             }
+            setLoading(false);
         };
 
         loadContent();
-        return () => {
-            mounted = false;
-        };
     }, [item, retryKey]);
 
-    if (!item) return null;
+    if (!item) {
+        return (
+            <div className="container" style={{ padding: "40px 0" }}>
+                <StateView
+                    state="error"
+                    title="Không tìm thấy bài viết"
+                    message="Vui lòng quay lại trang chủ."
+                    retryText="Về trang chủ"
+                    onRetry={() => navigate('/')}
+                />
+            </div>
+        );
+    }
 
     let image = item.thumbnail || item.enclosure?.link;
     if (!image) {
@@ -81,9 +95,13 @@ const NewsDetail = ({ item, onBack }) => {
 
     return (
         <div className="container news-detail-container fade-in">
-            <button onClick={onBack} className="back-btn">
-                ← Quay lại
-            </button>
+            <div className="breadcrumb">
+                <span onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Trang chủ</span>
+                <span> &gt; </span>
+                <span onClick={handleBack} style={{ cursor: 'pointer' }}>Quay lại</span>
+                <span> &gt; </span>
+                <span>Chi tiết</span>
+            </div>
 
             <h1 className="detail-title">{item.title}</h1>
 
@@ -91,14 +109,13 @@ const NewsDetail = ({ item, onBack }) => {
                 <span>
                     {new Date(item.pubDate).toLocaleDateString("vi-VN", {
                         weekday: "long",
+                        day: "2-digit",
+                        month: "2-digit",
                         year: "numeric",
-                        month: "long",
-                        day: "numeric",
                         hour: "2-digit",
                         minute: "2-digit",
                     })}
                 </span>
-                <span>Nguồn: Baotintuc.vn</span>
             </div>
 
             {image && (!fullContent || !fullContent.includes(image)) && (
@@ -110,7 +127,10 @@ const NewsDetail = ({ item, onBack }) => {
             {showEmpty ? (
                 <StateView state="empty" title="Không có nội dung để hiển thị" message="Vui lòng chọn bài viết khác." />
             ) : (
-                <div className="article-body" dangerouslySetInnerHTML={{ __html: displayContent }} />
+                <div className="article-body">
+                    {/* Render Sapo explicitly if we can identify it, or just rely on CSS first-child */}
+                    <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+                </div>
             )}
 
             {loading && (

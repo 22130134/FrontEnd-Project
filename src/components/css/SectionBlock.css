@@ -1,0 +1,166 @@
+/* SectionBlock.css */
+.section-block {
+    margin-bottom: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.section-heading {
+    border-bottom: 2px solid #e5e5e5;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+    position: relative;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: var(--primary-color, #be0027);
+    font-weight: bold;
+}
+
+.section-title-text {
+    border-bottom: 2px solid var(--primary-color, #be0027);
+    padding-bottom: 5px;
+    /* Matches parent padding to sit on line */
+    margin-bottom: -7px;
+    /* Pull down to cover parent border */
+    display: inline-block;
+}
+
+/* Focus / Hero Layout */
+.focus-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.focus-main {
+    cursor: pointer;
+}
+
+.focus-img-wrapper {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.focus-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.focus-main:hover img {
+    transform: scale(1.05);
+}
+
+.focus-info h2 {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+}
+
+.focus-info p {
+    color: #555;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.focus-sub-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-left: 1px solid #eee;
+    padding-left: 20px;
+}
+
+.focus-sub-item {
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.focus-sub-item:last-child {
+    border-bottom: none;
+}
+
+.focus-sub-item h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.4;
+}
+
+.focus-sub-item:hover h4 {
+    color: var(--primary-color, #be0027);
+}
+
+/* Grid 4 Layout */
+.section-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.grid-item {
+    cursor: pointer;
+}
+
+.grid-img-wrapper {
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: #f0f0f0;
+}
+
+.grid-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.grid-item:hover img {
+    transform: scale(1.05);
+}
+
+.grid-title {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.4;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.grid-item:hover .grid-title {
+    color: var(--primary-color, #be0027);
+}
+
+@media (max-width: 900px) {
+
+    .focus-grid,
+    .section-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .focus-img-wrapper {
+        height: 250px;
+    }
+
+    .focus-sub-list {
+        border-left: none;
+        padding-left: 0;
+        margin-top: 20px;
+    }
+}

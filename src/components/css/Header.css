@@ -1,0 +1,180 @@
+/* Header.css */
+
+/* Top Bar */
+.header-main {
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.top-bar {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #e1e1e1;
+    font-size: 13px;
+    color: #666;
+    padding: 5px 0;
+}
+
+.top-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: var(--container-width, 1140px);
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.top-right-links a {
+    color: #666;
+    margin-left: 15px;
+    text-decoration: none;
+}
+
+.top-right-links a:hover {
+    color: var(--primary-color, #be0027);
+}
+
+/* Main Header (Logo area) */
+header.container {
+    max-width: var(--container-width, 1140px);
+    margin: 0 auto;
+    padding: 15px 15px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 0;
+    /* Hide text if using image, or style text to look like logo */
+    line-height: 0;
+}
+
+/* If using text as logo for now */
+.logo-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--primary-color, #be0027);
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-btn {
+    padding: 6px 12px;
+    background: var(--primary-color, #be0027);
+    color: #fff;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+/* Navigation Bar */
+.desktop-nav {
+    background-color: var(--primary-color, #be0027);
+    width: 100%;
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: var(--container-width, 1140px);
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+.nav-list li {
+    flex-shrink: 0;
+}
+
+.nav-item-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+.nav-item-btn:hover,
+.nav-item-btn.active {
+    background-color: #92001e;
+    /* Darker shade of red */
+    color: #fff;
+}
+
+.nav-indicator {
+    display: none;
+    /* Removed custom indicator, using background color instead */
+}
+
+/* Mobile Menu */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.mobile-dropdown {
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 10px;
+}
+
+.mobile-nav-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: bold;
+}
+
+/* Responsiveness */
+@media (max-width: 900px) {
+    .desktop-nav {
+        display: none;
+        /* Hide desktop nav on mobile, use hamburger */
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .header-content {
+        justify-content: space-between;
+    }
+
+    .header-search {
+        display: none;
+        /* Simplify mobile header */
+    }
+}
