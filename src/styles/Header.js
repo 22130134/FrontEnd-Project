@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CATEGORIES } from '../services/rssService';
-import './css/Header.css';
+import { CATEGORIES } from '../services/rssService.js';
+import '../components/css/Header.css';
 
 const Header = ({ currentCategory, onCategoryChange }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);

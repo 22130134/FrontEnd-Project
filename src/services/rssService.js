@@ -11,7 +11,6 @@ export const CATEGORIES = [
 
 ];
 
-// URLs for specific homepage sections
 export const HOME_SECTIONS = [
     { id: 'focus', title: 'Tiêu điểm', url: 'https://baotintuc.vn/tin-moi-nhat.rss' }, // Use latest as focus
     { id: 'thoi-su', title: 'Thời sự', url: 'https://baotintuc.vn/thoi-su.rss' },
@@ -35,7 +34,6 @@ export const fetchFeed = async (rssUrl) => {
         return { items: [] };
     }
 };
-
 export const fetchAllSections = async () => {
     // Fetch all home sections in parallel
     const promises = HOME_SECTIONS.map(async (section) => {
@@ -55,6 +53,5 @@ export const fetchAllSections = async () => {
             };
         }
     });
-
     return Promise.all(promises);
 };

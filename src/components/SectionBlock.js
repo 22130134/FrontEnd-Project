@@ -45,7 +45,6 @@ const SectionBlock = ({ title, items, layout = 'grid', onArticleClick }) => {
         );
     }
 
-    // Default Grid Layout for Categories (e.g. World, Economy)
     const displayItems = items.slice(0, 4);
 
     return (
