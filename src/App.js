@@ -18,9 +18,9 @@ function App() {
     const [selectedArticle, setSelectedArticle] = useState(null);
     const [retryKey, setRetryKey] = useState(0);
 
-    // ✅ NEW: thời điểm cập nhật dữ liệu
+    // NEW: thời điểm cập nhật dữ liệu
+    // Data is fetched from RSS and may not be real-time
     const [lastUpdated, setLastUpdated] = useState(null);
-
     useEffect(() => {
         let mounted = true;
 
@@ -42,7 +42,7 @@ function App() {
 
                 setNews(items);
 
-                // ✅ LƯU THỜI ĐIỂM FETCH XONG
+                // LƯU THỜI ĐIỂM FETCH XONG
                 setLastUpdated(new Date());
             } catch (err) {
                 if (!mounted) return;
@@ -83,7 +83,7 @@ function App() {
 
     return (
         <div className="app">
-            {/* ✅ truyền lastUpdated xuống Header */}
+            {/*truyền lastUpdated xuống Header */}
             <Header
                 currentCategory={currentCategory}
                 onCategoryChange={setCurrentCategory}
