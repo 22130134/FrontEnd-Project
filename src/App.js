@@ -103,7 +103,7 @@ function App() {
                     <StateView
                         state="error"
                         title="Không tải được tin tức"
-                        message="Vui lòng thử lại. Nếu vẫn lỗi, có thể dịch vụ RSS đang quá tải."
+                        message="Vui lòng thử lại sau. Nếu vẫn lỗi, có thể dịch vụ RSS đang quá tải."
                         retryText="Thử lại"
                         onRetry={() => setRetryKey((k) => k + 1)}
                     />
