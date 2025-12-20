@@ -8,7 +8,6 @@ const NewsCard = ({ item, onClick }) => {
         const imgMatch = item.description?.match(/src="([^"]+)"/);
         image = imgMatch ? imgMatch[1] : 'https://placehold.co/600x400?text=News';
     }
-
     const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
     return (
