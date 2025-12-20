@@ -55,6 +55,5 @@ export const fetchAllSections = async () => {
             };
         }
     });
-
     return Promise.all(promises);
 };
