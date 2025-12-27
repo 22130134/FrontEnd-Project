@@ -55,3 +55,5 @@ export const fetchAllSections = async () => {
     });
     return Promise.all(promises);
 };
+
+// T?i uu hóa tài li?u code
