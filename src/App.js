@@ -11,6 +11,7 @@ function App() {
     const navigate = useNavigate();
     const location = useLocation();
 
+
     // Determine current category ID from path for Header active state
     // path: /category/:id or / -> home
     // Resolve category id from current URL path
