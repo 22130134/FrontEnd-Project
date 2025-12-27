@@ -34,7 +34,10 @@ function App() {
 
     return (
         <div className="app">
-            <Header currentCategory={getCategoryId()} onCategoryChange={handleCategoryChange} />
+            <Header
+                currentCategory={getCategoryId()}
+                onCategoryChange={handleCategoryChange}
+            />
 
             <Routes>
                 <Route path="/" element={<NewsFeed />} />
