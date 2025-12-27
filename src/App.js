@@ -23,7 +23,7 @@ function App() {
         }
         return '';
     };
-
+// TODO: consider adding analytics tracking for category navigation
     const handleCategoryChange = (id) => {
         if (id === 'home') {
             navigate('/');
