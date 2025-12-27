@@ -13,6 +13,7 @@ function App() {
 
     // Determine current category ID from path for Header active state
     // path: /category/:id or / -> home
+    // Resolve category id from current URL path
     const getCategoryId = () => {
         const path = location.pathname;
         if (path === '/') return 'home';
