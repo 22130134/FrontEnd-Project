@@ -1,7 +1,4 @@
 import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
 
 interface MediaItem {
     name: string;
@@ -29,59 +26,92 @@ const MediaStrip: React.FC = () => {
                     margin-top: 20px;
                     border-top: 1px solid #e5e5e5;
                 }
+
                 .media-ttxvn .media-inner {
-                    padding: 15px 0;
+                    overflow: hidden;
                 }
+
                 .media-ttxvn .media-title {
                     font-family: Roboto, sans-serif;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: 700;
-                    color: #363636;
+                    color: #111;
                     background: #f6f6f6;
                     padding: 5px 10px;
                     display: inline-block;
                     text-transform: uppercase;
-                    margin-bottom: 15px;
+                    margin-bottom: 10px;
                 }
-                .media-ttxvn .swiper-slide {
-                    width: auto !important;
+
+                /* ===== MARQUEE ===== */
+                .media-ttxvn .marquee {
+                    width: 100%;
+                    overflow: hidden;
+                }
+
+                .media-ttxvn .marquee-track {
                     display: flex;
                     align-items: center;
-                    justify-content: center;
+                    gap: 30px;
+                    width: max-content;
+                    animation: media-marquee 25s linear infinite;
                 }
+
+                .media-ttxvn .marquee-track a {
+                    display: flex;
+                    align-items: center;
+                }
+
                 .media-ttxvn img {
-                    max-height: 75px;
+                    height: 38px;
                     width: auto;
+                    object-fit: contain;
+                    opacity: 0.95;
+                    filter: grayscale(10%);
+                    transition: transform .2s ease, filter .2s ease;
                 }
-                /* Ensure smooth linear scrolling */
-                .media-ttxvn .swiper-wrapper {
-                    transition-timing-function: linear !important;
+
+                .media-ttxvn a:hover img {
+                    filter: none;
+                    transform: scale(1.05);
+                }
+
+                .media-ttxvn .marquee:hover .marquee-track {
+                    animation-play-state: paused;
+                }
+
+                @keyframes media-marquee {
+                    from {
+                        transform: translateX(0);
+                    }
+                    to {
+                        transform: translateX(-50%);
+                    }
                 }
             `}</style>
-            <div className="media-inner">
-                <h2><span className="media-title">Các đơn vị thông tin của TTXVN</span></h2>
-                <Swiper
-                    modules={[Autoplay]}
-                    slidesPerView="auto"
-                    spaceBetween={30}
-                    loop={true}
-                    speed={3000}
-                    autoplay={{
-                        delay: 0,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: true
-                    }}
-                    allowTouchMove={false}
-                    className="partner-swiper"
-                >
-                    {MEDIA_LIST.map((item, idx) => (
-                        <SwiperSlide key={idx}>
-                            <a href={item.link} target="_blank" rel="noopener noreferrer" title={item.name}>
+
+            <div className="media-inner w1040">
+                <h2>
+                    <span className="media-title">
+                        Các đơn vị thông tin của TTXVN
+                    </span>
+                </h2>
+
+                <div className="marquee">
+                    <div className="marquee-track">
+                        {[...MEDIA_LIST, ...MEDIA_LIST].map((item, idx) => (
+                            <a
+                                key={idx}
+                                href={item.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={item.name}
+                            >
                                 <img src={item.logo} alt={item.name} />
                             </a>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                        ))}
+                    </div>
+                </div>
             </div>
         </section>
     );
