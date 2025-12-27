@@ -5,7 +5,7 @@ import Footer from "./styles/Footer.js";
 import NewsDetail from "./components/NewsDetail";
 import NewsFeed from "./components/NewsFeed";
 import "./styles/global.css";
-// Data is fetched from RSS feeds and may not be real-time
+// News data is loaded from RSS feeds and may not be real-time
 // Main application entry with routing configuration
 function App() {
     const navigate = useNavigate();
