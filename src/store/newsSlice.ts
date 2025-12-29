@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { fetchFeed, NewsItem } from '../services/rssService';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
+import {fetchFeed, NewsItem} from '../services/rssService';
 
 interface NewsState {
     items: NewsItem[];
@@ -19,9 +19,9 @@ const initialState: NewsState = {
 // Following Unidirectional Data Flow: UI -> Dispatch Action -> Thunk -> API -> Reducer -> Store -> UI
 export const fetchNewsByCategory = createAsyncThunk(
     'news/fetchByCategory',
-    async ({ url, categoryId }: { url: string; categoryId: string }) => {
+    async ({url, categoryId}: { url: string; categoryId: string }) => {
         const data = await fetchFeed(url);
-        return { items: data.items || [], categoryId };
+        return {items: data.items || [], categoryId};
     }
 );
 
@@ -41,7 +41,10 @@ const newsSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchNewsByCategory.fulfilled, (state, action: PayloadAction<{ items: NewsItem[], categoryId: string }>) => {
+            .addCase(fetchNewsByCategory.fulfilled, (state, action: PayloadAction<{
+                items: NewsItem[],
+                categoryId: string
+            }>) => {
                 state.loading = false;
                 // Immutability is handled by Immer inside Redux Toolkit
                 state.items = action.payload.items;
@@ -54,5 +57,5 @@ const newsSlice = createSlice({
     },
 });
 
-export const { clearNews } = newsSlice.actions;
+export const {clearNews} = newsSlice.actions;
 export default newsSlice.reducer;
