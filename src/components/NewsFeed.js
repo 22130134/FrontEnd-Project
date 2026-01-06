@@ -10,7 +10,6 @@ function NewsFeed() {
     const { categoryId } = useParams();
     const navigate = useNavigate();
 
-    // Default to 'home' if no categoryId provided (though Route should handle this)
     const activeCategory = categoryId || 'home';
 
     const [news, setNews] = useState([]);
@@ -18,7 +17,6 @@ function NewsFeed() {
     const [error, setError] = useState(null);
     const [retryKey, setRetryKey] = useState(0);
 
-    // Hàm load tin tức mỗi khi category thay đổi
     useEffect(() => {
         const loadNews = async () => {
             setLoading(true);
