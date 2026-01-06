@@ -170,16 +170,3 @@ export const parseArticleContent = (html) => {
         return null;
     }
 };
-// C?p nh?t tài li?u hu?ng d?n cho scraper service
-
-// C?p nh?t tài li?u hu?ng d?n cho scraper service
-
-// B? sung ghi chú chi ti?t v? x? lý l?i
-
-// T?i uu hóa quy trình cào d? li?u RSS
-
-// Thêm bình lu?n gi?i thích logic phân tích cú pháp
-
-// C?i thi?n kh? nang d?c mã ngu?n
-
-// Rà soát l?i các hàm ti?n ích
