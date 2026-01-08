@@ -5,6 +5,7 @@ import Footer from "./styles/Footer.js";
 import NewsDetail from "./components/NewsDetail";
 import NewsFeed from "./components/NewsFeed";
 import "./styles/global.css";
+import BookmarksPage from "./components/BookmarksPage";
 // News data is loaded from RSS feeds and may not be real-time
 // Main application entry with routing configuration
 function App() {
@@ -40,6 +41,7 @@ function App() {
             />
 
             <Routes>
+                <Route path="/bookmarks" element={<BookmarksPage />} />
                 <Route path="/" element={<NewsFeed />} />
                 <Route path="/category/:categoryId" element={<NewsFeed />} />
                 <Route path="/news/detail" element={<NewsDetail />} />
