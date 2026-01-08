@@ -66,7 +66,7 @@ export default function StateView({
           width: 100%;
           text-align: center;
           padding: 18px 10px;
-          font-family: inherit; /* giữ font global của bạn */
+          font-family: inherit;
         }
 
         .svlite__title{
@@ -75,7 +75,7 @@ export default function StateView({
           gap: 10px;
           font-size: 15px;
           font-weight: 700;
-          color: #222; /* giống kiểu báo */
+          color: #222; 
         }
 
         .svlite__message{
