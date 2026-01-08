@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/HeroSection.css';
 
-const HeroItem = ({ item, isMain, onClick }) => {
+const HeroItem = ({item, isMain, onClick}) => {
     if (!item) return null;
 
     let image = item.thumbnail || item.enclosure?.link;
@@ -35,7 +35,7 @@ const HeroItem = ({ item, isMain, onClick }) => {
     );
 };
 
-const HeroSection = ({ items, onArticleClick }) => {
+const HeroSection = ({items, onArticleClick}) => {
     if (!items || items.length === 0) return null;
 
     const mainItem = items[0];
@@ -46,14 +46,14 @@ const HeroSection = ({ items, onArticleClick }) => {
             <div className="hero-grid">
                 {/* Main Hero */}
                 <div className="hero-main-col">
-                    <HeroItem item={mainItem} isMain={true} onClick={onArticleClick} />
+                    <HeroItem item={mainItem} isMain={true} onClick={onArticleClick}/>
                 </div>
 
                 {/* Sub Hero */}
                 <div className="hero-sub-col">
                     {subItems.map((item, index) => (
-                        <div key={index} style={{ flex: 1 }}>
-                            <HeroItem item={item} isMain={false} onClick={onArticleClick} />
+                        <div key={index} style={{flex: 1}}>
+                            <HeroItem item={item} isMain={false} onClick={onArticleClick}/>
                         </div>
                     ))}
                 </div>

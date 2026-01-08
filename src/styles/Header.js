@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
 import { CATEGORIES } from '../services/rssService.js';
+import { getBookmarks } from "../services/bookmarkService";
 import '../components/css/Header.css';
 
 const Header = ({ currentCategory, onCategoryChange }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [bookmarkCount, setBookmarkCount] = useState(0);
+
+    useEffect(() => {
+        const update = () => setBookmarkCount(getBookmarks().length);
+
+        update(); // load lần đầu
+        window.addEventListener("bookmarks:changed", update);
+
+        return () => window.removeEventListener("bookmarks:changed", update);
+    }, []);
 
     return (
         <div className="header-main">
@@ -11,9 +23,18 @@ const Header = ({ currentCategory, onCategoryChange }) => {
             <div className="top-bar">
                 <div className="top-bar-content">
                     <span className="date-time">
-                        {new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        {new Date().toLocaleDateString('vi-VN', {
+                            weekday: 'long',
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        })}
                     </span>
+
                     <div className="top-right-links">
+                        <Link to="/bookmarks" className="bookmark-link">
+                            Đã lưu {bookmarkCount > 0 ? <span className="bookmark-badge">{bookmarkCount}</span> : null}
+                        </Link>
                         <a href="#">RSS</a>
                         <a href="#">Liên hệ</a>
                     </div>
@@ -28,7 +49,20 @@ const Header = ({ currentCategory, onCategoryChange }) => {
                         onClick={() => onCategoryChange(CATEGORIES[0].id)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <span className="logo-text">BAOTINTUC<span style={{ color: '#666', fontSize: '0.5em', display: 'block', letterSpacing: '2px', marginTop: '-5px' }}>TTXVN</span></span>
+                        <span className="logo-text">
+                            BAOTINTUC
+                            <span
+                                style={{
+                                    color: '#666',
+                                    fontSize: '0.5em',
+                                    display: 'block',
+                                    letterSpacing: '2px',
+                                    marginTop: '-5px'
+                                }}
+                            >
+                                TTXVN
+                            </span>
+                        </span>
                     </div>
 
                     <div className="header-search">
