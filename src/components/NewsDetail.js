@@ -1,14 +1,13 @@
-
-import React, { useEffect, useState } from 'react';
-import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
+import React, {useEffect, useState} from 'react';
+import {fetchFullArticle, parseArticleContent} from '../services/scraperService';
 import StateView from './StateView';
 import './css/NewsDetail.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 
 const MAX_RETRY = 3;
 
-const NewsDetail = ({ item: propItem, onBack }) => {
+const NewsDetail = ({item: propItem, onBack}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const item = propItem || location.state?.item;
@@ -57,7 +56,7 @@ const NewsDetail = ({ item: propItem, onBack }) => {
 
     if (!item) {
         return (
-            <div className="container" style={{ padding: "40px 0" }}>
+            <div className="container" style={{padding: "40px 0"}}>
                 <StateView
                     state="error"
                     title="Không tìm thấy bài viết"
@@ -96,9 +95,9 @@ const NewsDetail = ({ item: propItem, onBack }) => {
     return (
         <div className="container news-detail-container fade-in">
             <div className="breadcrumb">
-                <span onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Trang chủ</span>
+                <span onClick={() => navigate('/')} style={{cursor: 'pointer'}}>Trang chủ</span>
                 <span> &gt; </span>
-                <span onClick={handleBack} style={{ cursor: 'pointer' }}>Quay lại</span>
+                <span onClick={handleBack} style={{cursor: 'pointer'}}>Quay lại</span>
                 <span> &gt; </span>
                 <span>Chi tiết</span>
             </div>
@@ -120,27 +119,28 @@ const NewsDetail = ({ item: propItem, onBack }) => {
 
             {image && (!fullContent || !fullContent.includes(image)) && (
                 <div className="detail-main-img-wrapper">
-                    <img src={image} alt={item.title} className="detail-main-img" />
+                    <img src={image} alt={item.title} className="detail-main-img"/>
                 </div>
             )}
 
             {showEmpty ? (
-                <StateView state="empty" title="Không có nội dung để hiển thị" message="Vui lòng chọn bài viết khác." />
+                <StateView state="empty" title="Không có nội dung để hiển thị" message="Vui lòng chọn bài viết khác."/>
             ) : (
                 <div className="article-body">
                     {/* Render Sapo explicitly if we can identify it, or just rely on CSS first-child */}
-                    <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+                    <div dangerouslySetInnerHTML={{__html: displayContent}}/>
                 </div>
             )}
 
             {loading && (
-                <div style={{ marginTop: 12 }}>
-                    <StateView state="loading" compact title="Đang tải nội dung đầy đủ..." message="Vui lòng chờ một chút." />
+                <div style={{marginTop: 12}}>
+                    <StateView state="loading" compact title="Đang tải nội dung đầy đủ..."
+                               message="Vui lòng chờ một chút."/>
                 </div>
             )}
 
             {!loading && error && (
-                <div style={{ marginTop: 12 }}>
+                <div style={{marginTop: 12}}>
                     <StateView
                         state="error"
                         compact
