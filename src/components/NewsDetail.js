@@ -3,7 +3,7 @@ import {fetchFullArticle, parseArticleContent} from '../services/scraperService'
 import StateView from './StateView';
 import './css/NewsDetail.css';
 import {useLocation, useNavigate} from 'react-router-dom';
-
+import {isBookmarked, toggleBookmark} from "../services/bookmarkService";
 
 const MAX_RETRY = 3;
 
@@ -19,35 +19,45 @@ const NewsDetail = ({item: propItem, onBack}) => {
     const [retryCount, setRetryCount] = useState(0);
     const [retryKey, setRetryKey] = useState(0);
 
-    const handleBack = () => {
-        if (onBack) {
-            onBack();
-        } else {
-            navigate(-1);
+    const [saved, setSaved] = useState(false);
+
+    useEffect(() => {
+        if (item?.link) {
+            setSaved(isBookmarked(item.link));
         }
+    }, [item?.link]);
+
+    const handleToggleSave = () => {
+        if (!item) return;
+        const {saved: nextSaved} = toggleBookmark(item);
+        setSaved(nextSaved);
     };
 
-    // Reset trang thái retry khi đổi bài viết
+    const handleBack = () => {
+        if (onBack) onBack();
+        else navigate(-1);
+    };
+
     useEffect(() => {
         setRetryCount(0);
         setRetryKey(0);
     }, [item]);
 
-    // Load nội dung bài viết
     useEffect(() => {
         const loadContent = async () => {
             if (!item || !item.link) return;
 
             setLoading(true);
+            setError(null);
+
             try {
-                // Lấy nội dung html từ link gốc
                 const html = await fetchFullArticle(item.link);
                 const parsed = parseArticleContent(html);
                 setFullContent(parsed);
             } catch (e) {
-                console.log(e);
                 setError(e);
             }
+
             setLoading(false);
         };
 
@@ -77,7 +87,10 @@ const NewsDetail = ({item: propItem, onBack}) => {
     const fallbackContent = item.content || item.description || "";
     const displayContent = fullContent || fallbackContent;
 
-    const showEmpty = !loading && !error && (!displayContent || displayContent.trim().length === 0);
+    const showEmpty =
+        !loading &&
+        !error &&
+        (!displayContent || displayContent.trim().length === 0);
 
     const canRetry = retryCount < MAX_RETRY;
 
@@ -102,7 +115,22 @@ const NewsDetail = ({item: propItem, onBack}) => {
                 <span>Chi tiết</span>
             </div>
 
-            <h1 className="detail-title">{item.title}</h1>
+            {/*TITLE + BOOKMARK*/}
+            <div className="detail-title-row">
+                <h1 className="detail-title">{item.title}</h1>
+
+                <button
+                    type="button"
+                    className={`bookmark-btn ${saved ? "saved" : ""}`}
+                    onClick={handleToggleSave}
+                    title={saved ? "Bỏ lưu" : "Lưu bài viết"}
+                >
+    <span className="bookmark-btn-text">
+        {saved ? "🔖 Đã lưu" : "📑 Lưu bài"}
+    </span>
+                </button>
+
+            </div>
 
             <div className="detail-meta">
                 <span>
@@ -124,18 +152,25 @@ const NewsDetail = ({item: propItem, onBack}) => {
             )}
 
             {showEmpty ? (
-                <StateView state="empty" title="Không có nội dung để hiển thị" message="Vui lòng chọn bài viết khác."/>
+                <StateView
+                    state="empty"
+                    title="Không có nội dung để hiển thị"
+                    message="Vui lòng chọn bài viết khác."
+                />
             ) : (
                 <div className="article-body">
-                    {/* Render Sapo explicitly if we can identify it, or just rely on CSS first-child */}
                     <div dangerouslySetInnerHTML={{__html: displayContent}}/>
                 </div>
             )}
 
             {loading && (
                 <div style={{marginTop: 12}}>
-                    <StateView state="loading" compact title="Đang tải nội dung đầy đủ..."
-                               message="Vui lòng chờ một chút."/>
+                    <StateView
+                        state="loading"
+                        compact
+                        title="Đang tải nội dung đầy đủ..."
+                        message="Vui lòng chờ một chút."
+                    />
                 </div>
             )}
 
