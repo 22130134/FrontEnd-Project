@@ -1,46 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import { fetchNewsByCategory, clearNews } from "../store/newsSlice";
 import HeroSection from "./HeroSection";
 import NewsList from "./NewsList";
 import Sidebar from "./Sidebar";
 import StateView from "./StateView";
-import { fetchFeed, CATEGORIES } from "../services/rssService";
+import { CATEGORIES } from "../services/rssService";
 
 function NewsFeed() {
     const { categoryId } = useParams();
-    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
     const activeCategory = categoryId || 'home';
 
-    const [news, setNews] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // Redux State
+    const { items: news, loading, error } = useSelector((state: RootState) => state.news);
     const [retryKey, setRetryKey] = useState(0);
 
     useEffect(() => {
-        const loadNews = async () => {
-            setLoading(true);
-            try {
-                // Tìm category hiện tại trong danh sách
-                const category = CATEGORIES.find((c) => c.id === activeCategory);
-                if (category) {
-                    const data = await fetchFeed(category.url);
-                    setNews(data.items || []);
-                }
-            } catch (err) {
-                console.log(err);
-                setError(true);
-            }
-            setLoading(false);
-        };
+        // Find category info
+        const category = CATEGORIES.find((c) => c.id === activeCategory);
+        if (category) {
+            dispatch(fetchNewsByCategory({ url: category.url, categoryId: activeCategory }));
+        } else {
+            // Invalid category handled by error state or redirect? 
+            // For now just clear news
+            dispatch(clearNews());
+        }
+    }, [activeCategory, retryKey, dispatch]);
 
-        loadNews();
-    }, [activeCategory, retryKey]);
 
-    // Chuyển sang trang chi tiết khi click vào bài viết
-    const handleArticleClick = (item) => {
-        navigate(`/news/detail`, { state: { item } });
-    };
 
     const heroItems = news.slice(0, 3);
     const mainFeedItems = news.slice(3, 15);
@@ -48,7 +39,10 @@ function NewsFeed() {
 
     const showEmpty = !loading && news.length === 0;
 
-    if (loading) {
+    if (loading && news.length === 0) {
+        // Only show full loading if we have no items. 
+        // If we had items (re-fetching), maybe show loading indicator overlay?
+        // For simplistic approach, show loading screen.
         return (
             <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
                 <StateView state="loading" title="Đang tải tin tức..." message="Vui lòng chờ một chút." />
@@ -56,7 +50,7 @@ function NewsFeed() {
         );
     }
 
-    if (error) {
+    if (error && news.length === 0) {
         return (
             <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
                 <StateView
@@ -81,7 +75,7 @@ function NewsFeed() {
     return (
         <main style={{ minHeight: '60vh', paddingBottom: '40px' }}>
             {activeCategory === 'home' && (
-                <HeroSection items={heroItems} onArticleClick={handleArticleClick} />
+                <HeroSection items={heroItems} />
             )}
 
             {activeCategory !== 'home' && (
@@ -108,11 +102,11 @@ function NewsFeed() {
                     }}
                 >
                     <div className="content-col">
-                        <NewsList items={activeCategory === 'home' ? mainFeedItems : news} onArticleClick={handleArticleClick} />
+                        <NewsList items={activeCategory === 'home' ? mainFeedItems : news} />
                     </div>
 
                     <div className="sidebar-col">
-                        <Sidebar latestItems={sidebarItems} onArticleClick={handleArticleClick} />
+                        <Sidebar latestItems={sidebarItems} />
                     </div>
                 </div>
             </div>

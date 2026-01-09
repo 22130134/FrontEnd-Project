@@ -4,28 +4,29 @@ import { fetchFullArticle, parseArticleContent } from '../services/scraperServic
 import StateView from './StateView';
 import './css/NewsDetail.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { NewsItem } from '../services/rssService';
 
 
 const MAX_RETRY = 3;
 
-const NewsDetail = ({ item: propItem, onBack }) => {
+const NewsDetail: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const item = propItem || location.state?.item;
 
-    const [fullContent, setFullContent] = useState(null);
+    // Explicitly casting state
+    const state = location.state as { item: NewsItem } | null;
+    const item = state?.item;
+
+    const [fullContent, setFullContent] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<any>(null);
 
     const [retryCount, setRetryCount] = useState(0);
     const [retryKey, setRetryKey] = useState(0);
 
     const handleBack = () => {
-        if (onBack) {
-            onBack();
-        } else {
-            navigate(-1);
-        }
+        // Simple back
+        navigate(-1);
     };
 
     // Reset trang thái retry khi đổi bài viết
@@ -72,7 +73,7 @@ const NewsDetail = ({ item: propItem, onBack }) => {
     let image = item.thumbnail || item.enclosure?.link;
     if (!image) {
         const imgMatch = item.description?.match(/src="([^"]+)"/);
-        image = imgMatch ? imgMatch[1] : null;
+        image = imgMatch ? imgMatch[1] : undefined;
     }
 
     const fallbackContent = item.content || item.description || "";

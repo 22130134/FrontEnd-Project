@@ -1,5 +1,5 @@
 // Simple in-memory cache to store fetched articles
-const articleCache = new Map();
+const articleCache = new Map<string, string>();
 
 const PROXIES = [
     'https://api.allorigins.win/raw?url=',
@@ -7,16 +7,16 @@ const PROXIES = [
     'https://thingproxy.freeboard.io/fetch/'
 ];
 
-export const fetchFullArticle = async (url) => {
+export const fetchFullArticle = async (url: string): Promise<string> => {
     if (!url) throw new Error("Missing article url");
 
     // Check cache first
     if (articleCache.has(url)) {
         console.log("Serving article from cache:", url);
-        return articleCache.get(url);
+        return articleCache.get(url)!;
     }
 
-    let lastError = null;
+    let lastError: any = null;
 
     for (const proxy of PROXIES) {
         try {
@@ -50,7 +50,7 @@ export const fetchFullArticle = async (url) => {
     throw lastError || new Error("Failed to fetch article from all proxies");
 };
 
-export const parseArticleContent = (html) => {
+export const parseArticleContent = (html: string): string | null => {
     try {
         if (!html) return null;
 
@@ -66,7 +66,7 @@ export const parseArticleContent = (html) => {
             '.contents'        // Variation
         ];
 
-        let contentElement = null;
+        let contentElement: Element | null = null;
         for (const selector of contentSelectors) {
             contentElement = doc.querySelector(selector);
             if (contentElement) break;
@@ -115,7 +115,7 @@ export const parseArticleContent = (html) => {
             // Text-based filtering for un-classed noise (e.g. "Từ khóa:", "Chia sẻ:")
             const textNodes = contentElement.querySelectorAll('p, div, h4, h5, li');
             textNodes.forEach(el => {
-                const text = el.textContent.trim().toLowerCase();
+                const text = el.textContent?.trim().toLowerCase() || '';
                 if (text.startsWith('chia sẻ:') || text.startsWith('từ khóa:')) {
                     el.remove();
                 }
@@ -128,7 +128,7 @@ export const parseArticleContent = (html) => {
             // Clean up empty tags left behind
             const paragraphs = contentElement.querySelectorAll('p, div');
             paragraphs.forEach(p => {
-                if (p.textContent.trim().length === 0 && p.querySelectorAll('img').length === 0) {
+                if (p.textContent?.trim().length === 0 && p.querySelectorAll('img').length === 0) {
                     p.remove();
                 }
             });

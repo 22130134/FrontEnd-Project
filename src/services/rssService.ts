@@ -1,4 +1,22 @@
-export const CATEGORIES = [
+export interface NewsItem {
+    title: string;
+    link: string;
+    guid?: string;
+    pubDate: string;
+    description: string;
+    content?: string;
+    enclosure?: { link: string };
+    thumbnail?: string;
+    author?: string;
+}
+
+export interface Category {
+    name: string;
+    url: string;
+    id: string;
+}
+
+export const CATEGORIES: Category[] = [
     { name: "Trang chủ", url: "https://baotintuc.vn/tin-moi-nhat.rss", id: "home" },
     { name: "Thời sự", url: "https://baotintuc.vn/thoi-su.rss", id: "thoi-su" },
     { name: "Thế giới", url: "https://baotintuc.vn/the-gioi.rss", id: "the-gioi" },
@@ -8,11 +26,16 @@ export const CATEGORIES = [
     { name: "Văn hóa", url: "https://baotintuc.vn/van-hoa.rss", id: "van-hoa" },
     { name: "Giáo dục", url: "https://baotintuc.vn/giao-duc.rss", id: "giao-duc" },
     { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" }
-
 ];
 
-export const HOME_SECTIONS = [
-    { id: 'focus', title: 'Tiêu điểm', url: 'https://baotintuc.vn/tin-moi-nhat.rss' }, // Use latest as focus
+export interface HomeSection {
+    id: string;
+    title: string;
+    url: string;
+}
+
+export const HOME_SECTIONS: HomeSection[] = [
+    { id: 'focus', title: 'Tiêu điểm', url: 'https://baotintuc.vn/tin-moi-nhat.rss' },
     { id: 'thoi-su', title: 'Thời sự', url: 'https://baotintuc.vn/thoi-su.rss' },
     { id: 'the-gioi', title: 'Thế giới', url: 'https://baotintuc.vn/the-gioi.rss' },
     { id: 'kinh-te', title: 'Kinh tế', url: 'https://baotintuc.vn/kinh-te.rss' },
@@ -20,7 +43,12 @@ export const HOME_SECTIONS = [
     { id: 'phap-luat', title: 'Pháp luật', url: 'https://baotintuc.vn/phap-luat.rss' }
 ];
 
-export const fetchFeed = async (rssUrl) => {
+interface RSSSectionResult extends HomeSection {
+    items: NewsItem[];
+    error: string | null;
+}
+
+export const fetchFeed = async (rssUrl: string): Promise<{ items: NewsItem[] }> => {
     // Sử dụng rss2json để chuyển đổi RSS sang JSON
     const apiKey = 'https://api.rss2json.com/v1/api.json?rss_url=';
     const url = apiKey + encodeURIComponent(rssUrl);
@@ -28,13 +56,14 @@ export const fetchFeed = async (rssUrl) => {
     try {
         const response = await fetch(url);
         const data = await response.json();
-        return data;
+        return data as { items: NewsItem[] };
     } catch (error) {
         console.log("Lỗi khi lấy dữ liệu:", error);
         return { items: [] };
     }
 };
-export const fetchAllSections = async () => {
+
+export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
     // Fetch all home sections in parallel
     const promises = HOME_SECTIONS.map(async (section) => {
         try {
@@ -44,16 +73,14 @@ export const fetchAllSections = async () => {
                 items: data.items || [],
                 error: null
             };
-        } catch (e) {
+        } catch (e: any) {
             console.error(`Failed to load section ${section.title}`, e);
             return {
                 ...section,
                 items: [],
-                error: e.message
+                error: e.message || 'Unknown error'
             };
         }
     });
     return Promise.all(promises);
 };
-
-

@@ -1,7 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './css/NewsList.css';
+import { NewsItem } from '../services/rssService';
 
-const NewsCard = ({ item, onClick }) => {
+interface NewsCardProps {
+    item: NewsItem;
+}
+
+const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
     // Attempt to parse image from description if RSS doesn't have it directly
     let image = item.thumbnail || item.enclosure?.link;
     if (!image) {
@@ -11,7 +17,12 @@ const NewsCard = ({ item, onClick }) => {
     const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
     return (
-        <div onClick={() => onClick(item)} className="news-card">
+        <Link
+            to="/news/detail"
+            state={{ item }}
+            className="news-card"
+            style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+        >
             <div className="news-card-inner fade-in">
                 <div className="news-card-img-wrapper">
                     <img
@@ -32,17 +43,21 @@ const NewsCard = ({ item, onClick }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
-const NewsList = ({ items, onArticleClick }) => {
+interface NewsListProps {
+    items: NewsItem[];
+}
+
+const NewsList: React.FC<NewsListProps> = ({ items }) => {
     if (!items || items.length === 0) return null;
 
     return (
         <div className="news-list-container">
             {items.map((item, index) => (
-                <NewsCard key={index} item={item} onClick={onArticleClick} />
+                <NewsCard key={index} item={item} />
             ))}
         </div>
     );

@@ -1,16 +1,30 @@
 // UI state handling for loading, empty and error cases
 import React from "react";
 
+interface StateViewProps {
+    state: "loading" | "empty" | "error" | null;
+    title?: string;
+    message?: string;
+    onRetry?: () => void;
+    retryText?: string;
+    linkHref?: string;
+    linkText?: string;
+    className?: string;
+    // compact prop used in NewsDetail but not in original signature explicitly
+    compact?: boolean;
+}
+
 export default function StateView({
-                                      state, // "loading" | "empty" | "error"
-                                      title,
-                                      message,
-                                      onRetry,
-                                      retryText = "Thử lại",
-                                      linkHref,
-                                      linkText = "Mở bài gốc",
-                                      className = "",
-                                  }) {
+    state,
+    title,
+    message,
+    onRetry,
+    retryText = "Thử lại",
+    linkHref,
+    linkText = "Mở bài gốc",
+    className = "",
+    compact = false
+}: StateViewProps) {
     if (!state) return null;
 
     const isLoading = state === "loading";
@@ -34,7 +48,7 @@ export default function StateView({
 
     return (
         <div
-            className={`svlite ${className}`}
+            className={`svlite ${className} ${compact ? 'compact' : ''}`}
             role={isError ? "alert" : "status"}
             aria-busy={isLoading ? "true" : "false"}
         >
@@ -66,7 +80,11 @@ export default function StateView({
           width: 100%;
           text-align: center;
           padding: 18px 10px;
-          font-family: inherit; /* giữ font global của bạn */
+          font-family: inherit;
+        }
+        .svlite.compact {
+           padding: 10px 0;
+           text-align: left;
         }
 
         .svlite__title{
@@ -75,7 +93,7 @@ export default function StateView({
           gap: 10px;
           font-size: 15px;
           font-weight: 700;
-          color: #222; /* giống kiểu báo */
+          color: #222;
         }
 
         .svlite__message{
@@ -91,6 +109,9 @@ export default function StateView({
           gap: 14px;
           align-items: center;
           justify-content: center;
+        }
+        .svlite.compact .svlite__actions {
+            justify-content: flex-start;
         }
 
         .svlite__btn{

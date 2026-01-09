@@ -1,7 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './css/HeroSection.css';
+import { NewsItem } from '../services/rssService';
 
-const HeroItem = ({ item, isMain, onClick }) => {
+interface HeroItemProps {
+    item: NewsItem;
+    isMain: boolean;
+}
+
+const HeroItem: React.FC<HeroItemProps> = ({ item, isMain }) => {
     if (!item) return null;
 
     let image = item.thumbnail || item.enclosure?.link;
@@ -13,7 +20,12 @@ const HeroItem = ({ item, isMain, onClick }) => {
     const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
     return (
-        <div className="hero-item" onClick={() => onClick(item)}>
+        <Link
+            to="/news/detail"
+            state={{ item }}
+            className="hero-item"
+            style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+        >
             <div className="hero-image-wrapper">
                 <img
                     src={image}
@@ -31,11 +43,15 @@ const HeroItem = ({ item, isMain, onClick }) => {
                     )}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
-const HeroSection = ({ items, onArticleClick }) => {
+interface HeroSectionProps {
+    items: NewsItem[];
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ items }) => {
     if (!items || items.length === 0) return null;
 
     const mainItem = items[0];
@@ -46,14 +62,14 @@ const HeroSection = ({ items, onArticleClick }) => {
             <div className="hero-grid">
                 {/* Main Hero */}
                 <div className="hero-main-col">
-                    <HeroItem item={mainItem} isMain={true} onClick={onArticleClick} />
+                    <HeroItem item={mainItem} isMain={true} />
                 </div>
 
                 {/* Sub Hero */}
                 <div className="hero-sub-col">
                     {subItems.map((item, index) => (
                         <div key={index} style={{ flex: 1 }}>
-                            <HeroItem item={item} isMain={false} onClick={onArticleClick} />
+                            <HeroItem item={item} isMain={false} />
                         </div>
                     ))}
                 </div>

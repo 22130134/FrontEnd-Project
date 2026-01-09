@@ -1,11 +1,19 @@
 import React from 'react';
 import './css/SectionBlock.css';
+import { NewsItem } from '../services/rssService';
 
-const SectionBlock = ({ title, items, layout = 'grid', onArticleClick }) => {
+interface SectionBlockProps {
+    title: string;
+    items: NewsItem[];
+    layout?: 'grid' | 'hero';
+    onArticleClick: (item: NewsItem) => void;
+}
+
+const SectionBlock: React.FC<SectionBlockProps> = ({ title, items, layout = 'grid', onArticleClick }) => {
     if (!items || items.length === 0) return null;
 
     // Helper to extract image
-    const getItemImage = (item) => {
+    const getItemImage = (item: NewsItem) => {
         let image = item.thumbnail || item.enclosure?.link;
         if (!image) {
             const imgMatch = item.description?.match(/src="([^"]+)"/);
@@ -14,7 +22,7 @@ const SectionBlock = ({ title, items, layout = 'grid', onArticleClick }) => {
         return image;
     };
 
-    const cleanDesc = (desc) => desc?.replace(/<[^>]+>/g, '').trim() || "";
+    const cleanDesc = (desc: string) => desc?.replace(/<[^>]+>/g, '').trim() || "";
 
     if (layout === 'hero') {
         // Focus Section: 1 Large Left, 2-3 Small Right
