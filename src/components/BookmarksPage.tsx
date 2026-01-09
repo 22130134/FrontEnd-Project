@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StateView from "./StateView";
 import NewsList from "./NewsList";
 import { getBookmarks, removeBookmark, clearBookmarks } from "../services/bookmarkService";
+import { NewsItem } from "../services/rssService";
 
 export default function BookmarksPage() {
     const navigate = useNavigate();
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState<NewsItem[]>([]);
 
     useEffect(() => {
         const data = getBookmarks();
         setItems(data);
     }, []);
 
-    const openDetail = (item) => {
-        navigate("/news/detail", { state: { item } });
-    };
-
-    const handleRemove = (link) => {
+    const handleRemove = (link: string) => {
         const next = removeBookmark(link);
         setItems(next);
     };
@@ -72,7 +69,6 @@ export default function BookmarksPage() {
 
             <NewsList
                 items={items}
-                onArticleClick={openDetail}
                 showRemove={true}
                 onRemove={(it) => handleRemove(it.link)}
             />

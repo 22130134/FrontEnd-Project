@@ -1,7 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './css/NewsList.css';
+import { NewsItem } from '../services/rssService';
 
-const NewsCard = ({ item, onClick, showRemove = false, onRemove }) => {
+interface NewsCardProps {
+    item: NewsItem;
+    showRemove?: boolean;
+    onRemove?: (item: NewsItem) => void;
+}
+
+const NewsCard: React.FC<NewsCardProps> = ({ item, showRemove = false, onRemove }) => {
     // Attempt to parse image from description if RSS doesn't have it directly
     let image = item.thumbnail || item.enclosure?.link;
     if (!image) {
@@ -10,13 +18,19 @@ const NewsCard = ({ item, onClick, showRemove = false, onRemove }) => {
     }
     const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
-    const handleRemoveClick = (e) => {
+    const handleRemoveClick = (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent Link navigation
         e.stopPropagation();
         if (onRemove) onRemove(item);
     };
 
     return (
-        <div onClick={() => onClick(item)} className="news-card" role="button" tabIndex={0}>
+        <Link
+            to="/news/detail"
+            state={{ item }}
+            className="news-card"
+            style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+        >
             <div className="news-card-inner fade-in">
                 <div className="news-card-img-wrapper">
                     <img
@@ -25,10 +39,9 @@ const NewsCard = ({ item, onClick, showRemove = false, onRemove }) => {
                         className="news-card-img"
                     />
                 </div>
-
                 <div className="news-card-content">
-                    <div className="news-card-title-row">
-                        <h3 className="news-card-title">
+                    <div className="news-card-title-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <h3 className="news-card-title" style={{ flex: 1 }}>
                             {item.title}
                         </h3>
 
@@ -39,6 +52,13 @@ const NewsCard = ({ item, onClick, showRemove = false, onRemove }) => {
                                 onClick={handleRemoveClick}
                                 title="Bỏ lưu bài viết"
                                 aria-label="Bỏ lưu bài viết"
+                                style={{
+                                    border: 'none',
+                                    background: 'transparent',
+                                    cursor: 'pointer',
+                                    fontSize: '18px',
+                                    marginLeft: '10px'
+                                }}
                             >
                                 🗑
                             </button>
@@ -48,26 +68,32 @@ const NewsCard = ({ item, onClick, showRemove = false, onRemove }) => {
                     <p className="news-card-desc">
                         {cleanDesc}
                     </p>
-
                     <div className="news-card-meta">
                         {new Date(item.pubDate).toLocaleDateString()}
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
-const NewsList = ({ items, onArticleClick, showRemove = false, onRemove }) => {
+interface NewsListProps {
+    items: NewsItem[];
+    // Optional props for Bookmark functionality
+    showRemove?: boolean;
+    onRemove?: (item: NewsItem) => void;
+    // Fallback if Kiet's code passes onArticleClick (we ignore it for Link but keep interface compat if needed, simplified here)
+}
+
+const NewsList: React.FC<NewsListProps> = ({ items, showRemove, onRemove }) => {
     if (!items || items.length === 0) return null;
 
     return (
         <div className="news-list-container">
             {items.map((item, index) => (
                 <NewsCard
-                    key={item.link || index}
+                    key={index}
                     item={item}
-                    onClick={onArticleClick}
                     showRemove={showRemove}
                     onRemove={onRemove}
                 />

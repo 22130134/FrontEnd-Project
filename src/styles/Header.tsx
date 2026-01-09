@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
-import { CATEGORIES } from '../services/rssService.js';
+import { Link, useLocation } from 'react-router-dom';
+import { CATEGORIES } from '../services/rssService';
 import { getBookmarks } from "../services/bookmarkService";
 import homeIcon from '../assets/home.svg';
 import logoNew from '../assets/logo_new.png'; // Updated Logo
+import '../components/css/Header.css'; // Make sure this CSS exists or is merged
 
-
-// We rely on baotintuc.css imported in App.js
-
-const Header = ({ currentCategory, onCategoryChange }) => {
+const Header: React.FC = () => {
+    const location = useLocation();
     const [bookmarkCount, setBookmarkCount] = useState(0);
+
+    // Determine current category ID from path
+    const getCategoryId = () => {
+        const path = location.pathname;
+        if (path === '/') return 'home';
+        if (path.startsWith('/category/')) {
+            return path.split('/')[2];
+        }
+        return '';
+    };
+
+    const currentCategory = getCategoryId();
 
     useEffect(() => {
         const update = () => setBookmarkCount(getBookmarks().length);
@@ -17,12 +28,6 @@ const Header = ({ currentCategory, onCategoryChange }) => {
         window.addEventListener("bookmarks:changed", update);
         return () => window.removeEventListener("bookmarks:changed", update);
     }, []);
-
-    // Helper to handle clicks and prevent default link behavior if needed
-    const handleNavClick = (e, id) => {
-        e.preventDefault();
-        onCategoryChange(id);
-    };
 
     return (
         <div className="header">
@@ -59,13 +64,12 @@ const Header = ({ currentCategory, onCategoryChange }) => {
                 <div className="headerlogo">
                     <div className="headerlogo_wrapper w1040">
                         {/* New Logo */}
-                        <a
-                            href="/"
+                        <Link
+                            to="/"
                             className="logo"
-                            onClick={(e) => handleNavClick(e, 'home')}
                         >
                             <img src={logoNew} alt="Bao Tin Tuc" />
-                        </a>
+                        </Link>
 
                         {/* Slogan */}
                         <div className="header-slogan">
@@ -77,25 +81,23 @@ const Header = ({ currentCategory, onCategoryChange }) => {
                 {/* NAVBAR */}
                 <div className="navbar" id="menu">
                     <div className="navbar_wrapper w1040">
-                        <a
-                            href="/"
+                        <Link
+                            to="/"
                             className="iconhome"
-                            onClick={(e) => handleNavClick(e, 'home')}
                         >
                             <img src={homeIcon} alt="Home" />
-                        </a>
+                        </Link>
                         <ul className="list-navbar">
                             {CATEGORIES.map((cat) => (
                                 <li className="nav-item" key={cat.id}>
-                                    <a
-                                        href={`/category/${cat.id}`}
+                                    <Link
+                                        to={`/category/${cat.id}`}
                                         title={cat.name}
                                         id={`menu_${cat.id}`}
                                         className={currentCategory === cat.id ? 'active' : ''}
-                                        onClick={(e) => handleNavClick(e, cat.id)}
                                     >
                                         {cat.name}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>

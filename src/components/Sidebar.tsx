@@ -1,7 +1,14 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import './css/Sidebar.css';
+import { NewsItem } from '../services/rssService';
 
-const Sidebar = ({ latestItems, onArticleClick }) => {
+interface SidebarProps {
+    latestItems: NewsItem[];
+    // Keeping compat with previous version if it had onArticleClick, but we ignore it for Link
+    onArticleClick?: (item: NewsItem) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ latestItems }) => {
     return (
         <div className="sidebar" style={{
             fontFamily: 'Roboto, sans-serif'
@@ -29,11 +36,15 @@ const Sidebar = ({ latestItems, onArticleClick }) => {
 
             <div className="sidebar-list">
                 {latestItems.map((item, index) => (
-                    <div
+                    <Link
                         key={index}
-                        onClick={() => onArticleClick(item)}
+                        to="/news/detail"
+                        state={{ item }}
                         className="sidebar-item-link"
                         style={{
+                            display: 'block',
+                            textDecoration: 'none',
+                            color: 'inherit',
                             marginBottom: '15px',
                             paddingBottom: '15px',
                             borderBottom: '1px solid #eee',
@@ -59,7 +70,7 @@ const Sidebar = ({ latestItems, onArticleClick }) => {
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 

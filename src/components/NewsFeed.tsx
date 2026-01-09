@@ -1,74 +1,64 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import { fetchNewsByCategory, clearNews } from "../store/newsSlice";
 import HeroSection from "./HeroSection";
 import NewsList from "./NewsList";
 import Sidebar from "./Sidebar";
-import CategoryBlock from "./CategoryBlock"; // New component
 import StateView from "./StateView";
-import { fetchFeed, fetchAllSections, CATEGORIES } from "../services/rssService";
+import { CATEGORIES, fetchAllSections, NewsItem, HomeSection } from "../services/rssService";
+import CategoryBlock from "./CategoryBlock";
+
+// Define locally since it might not be exported
+interface SectionData extends HomeSection {
+    items: NewsItem[];
+    error: string | null;
+}
 
 function NewsFeed() {
     const { categoryId } = useParams();
-    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
     const activeCategory = categoryId || 'home';
 
-    const [news, setNews] = useState([]); // For single category or 'focus' items on home
-    const [sections, setSections] = useState([]); // For homepage multiple sections
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // Redux State
+    const { items: news, loading, error } = useSelector((state: RootState) => state.news);
     const [retryKey, setRetryKey] = useState(0);
 
+    // Local State for Home Sections
+    const [homeSections, setHomeSections] = useState<SectionData[]>([]);
+
     useEffect(() => {
-        const loadNews = async () => {
-            setLoading(true);
-            try {
-                if (activeCategory === 'home') {
-                    // Fetch all sections for homepage
-                    const allData = await fetchAllSections();
+        // Redux fetch for main list / hero
+        const category = CATEGORIES.find((c) => c.id === activeCategory);
+        if (category) {
+            dispatch(fetchNewsByCategory({ url: category.url, categoryId: activeCategory }));
+        } else {
+            dispatch(clearNews());
+        }
 
-                    // The first section is 'Focus' (latest) used for Hero
-                    const focusSection = allData.find(s => s.id === 'focus');
-                    const otherSections = allData.filter(s => s.id !== 'focus');
+        // Local fetch for Home Sections (only on Home)
+        if (activeCategory === 'home') {
+            fetchAllSections().then(data => {
+                // Filter out 'focus' as it's typically shown in Hero
+                const others = data.filter(s => s.id !== 'focus');
+                setHomeSections(others);
+            });
+        } else {
+            setHomeSections([]);
+        }
 
-                    setNews(focusSection?.items || []);
-                    setSections(otherSections);
-                } else {
-                    // Fetch single category
-                    const category = CATEGORIES.find((c) => c.id === activeCategory);
-                    if (category) {
-                        const data = await fetchFeed(category.url);
-                        setNews(data.items || []);
-                        setSections([]); // Clear sections
-                    }
-                }
-            } catch (err) {
-                console.log(err);
-                setError(true);
-            }
-            setLoading(false);
-        };
+    }, [activeCategory, retryKey, dispatch]);
 
-        loadNews();
-    }, [activeCategory, retryKey]);
-
-    // Chuyển sang trang chi tiết khi click vào bài viết
-    const handleArticleClick = (item) => {
-        navigate(`/news/detail`, { state: { item } });
-    };
-
-    // Data partitioning
+    // Data partitioning for "Focus" / Category Items
     const heroItems = news.slice(0, 4);
-    const mainFeedItems = news.slice(4, 20); // For regular category view
-
-    // Sidebar always shows some latest news. 
-    // On homepage, we can use the 'news' (focus items) as latest, or slice from end.
-    // Let's use a slice of current news for simplicity.
+    const mainFeedItems = news.slice(4, 20); // Used for Category pages or fallback
     const sidebarItems = news.slice(0, 15);
 
-    const showEmpty = !loading && news.length === 0 && sections.length === 0;
+    const showLoading = loading && news.length === 0;
 
-    if (loading) {
+    if (showLoading) {
         return (
             <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
                 <StateView state="loading" title="Đang tải tin tức..." message="Vui lòng chờ một chút." />
@@ -76,7 +66,7 @@ function NewsFeed() {
         );
     }
 
-    if (error) {
+    if (error && news.length === 0) {
         return (
             <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
                 <StateView
@@ -90,24 +80,17 @@ function NewsFeed() {
         );
     }
 
-    if (showEmpty) {
-        return (
-            <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
-                <StateView state="empty" title="Chưa có tin" message="Danh mục này hiện chưa có bài viết để hiển thị." />
-            </div>
-        );
-    }
-
+    // Render Logic
     return (
         <main className="home-content" style={{ minHeight: '60vh', paddingBottom: '40px' }}>
             <div className="content_wrapper w1040">
 
-                {/* Hero Section - Full Width (Home Only) */}
+                {/* 1. Hero Section (Home Only) */}
                 {activeCategory === 'home' && (
-                    <HeroSection items={heroItems} onArticleClick={handleArticleClick} />
+                    <HeroSection items={heroItems} />
                 )}
 
-                {/* Category Header (Sub-pages Only) */}
+                {/* 2. Category Header (Sub-pages Only) */}
                 {activeCategory !== 'home' && (
                     <div className="category-header">
                         <h2 className="page-title" style={{
@@ -123,7 +106,7 @@ function NewsFeed() {
                     </div>
                 )}
 
-                {/* Main Content Columns */}
+                {/* 3. Main Content Columns */}
                 <div className="content_center">
                     <div
                         className="main-layout"
@@ -136,27 +119,32 @@ function NewsFeed() {
                         }}
                     >
                         <div className="content-col">
-                            {/* HOMEPAGE: Render Category Blocks */}
                             {activeCategory === 'home' ? (
-                                <div className="home-sections">
-                                    {sections.map(section => (
+                                // --- HOME VIEW: Sections ---
+                                <div>
+                                    {homeSections.map(section => (
                                         <CategoryBlock
                                             key={section.id}
                                             title={section.title}
                                             link={`/category/${section.id}`}
                                             items={section.items}
-                                            onArticleClick={handleArticleClick}
                                         />
                                     ))}
+                                    {homeSections.length === 0 && !loading && (
+                                        // Fallback if sections haven't loaded but hero has?
+                                        <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                                            Đang tải các chuyên mục...
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
-                                /* SUB-PAGE: Render Standard List */
-                                <NewsList items={mainFeedItems} onArticleClick={handleArticleClick} />
+                                // --- CATEGORY VIEW: List ---
+                                <NewsList items={mainFeedItems} />
                             )}
                         </div>
 
                         <div className="sidebar-col">
-                            <Sidebar latestItems={sidebarItems} onArticleClick={handleArticleClick} />
+                            <Sidebar latestItems={sidebarItems} />
                         </div>
                     </div>
                 </div>

@@ -1,14 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { NewsItem } from '../services/rssService';
 
-const CategoryBlock = ({ title, link, items, onArticleClick }) => {
+interface CategoryBlockProps {
+    title: string;
+    link: string;
+    items: NewsItem[];
+}
+
+const CategoryBlock: React.FC<CategoryBlockProps> = ({ title, link, items }) => {
     if (!items || items.length === 0) return null;
 
     const mainItem = items[0];
     const subItems = items.slice(1, 4); // Take next 3 items
 
     // Helpers
-    const getImage = (item) => {
+    const getImage = (item: NewsItem) => {
         let image = item.thumbnail || item.enclosure?.link;
         if (!image) {
             const imgMatch = item.description?.match(/src="([^"]+)"/);
@@ -16,7 +23,7 @@ const CategoryBlock = ({ title, link, items, onArticleClick }) => {
         }
         return image;
     };
-    const cleanTitle = (t) => t?.replace(/<[^>]+>/g, '').trim();
+    const cleanTitle = (t: string) => t?.replace(/<[^>]+>/g, '').trim();
 
     return (
         <div className="category-block" style={{ marginBottom: '30px' }}>
@@ -44,29 +51,36 @@ const CategoryBlock = ({ title, link, items, onArticleClick }) => {
             <div className="cat-content" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 {/* Main Article (Left) */}
                 <div className="cat-main">
-                    <div
+                    <Link
+                        to="/news/detail"
+                        state={{ item: mainItem }}
                         className="cat-thumb"
-                        onClick={() => onArticleClick(mainItem)}
-                        style={{ cursor: 'pointer', overflow: 'hidden', borderRadius: '4px', marginBottom: '10px' }}
+                        style={{ cursor: 'pointer', overflow: 'hidden', borderRadius: '4px', marginBottom: '10px', display: 'block' }}
                     >
                         <img
                             src={getImage(mainItem)}
                             alt={mainItem.title}
                             style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
                         />
-                    </div>
-                    <h4
-                        onClick={() => onArticleClick(mainItem)}
-                        style={{
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            margin: '0 0 5px 0',
-                            cursor: 'pointer',
-                            lineHeight: '1.4'
-                        }}
+                    </Link>
+                    <Link
+                        to="/news/detail"
+                        state={{ item: mainItem }}
+                        style={{ textDecoration: 'none' }}
                     >
-                        {cleanTitle(mainItem.title)}
-                    </h4>
+                        <h4
+                            style={{
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                margin: '0 0 5px 0',
+                                cursor: 'pointer',
+                                lineHeight: '1.4',
+                                color: '#000'
+                            }}
+                        >
+                            {cleanTitle(mainItem.title)}
+                        </h4>
+                    </Link>
                     <p style={{ fontSize: '13px', color: '#666', lineHeight: '1.5', margin: 0 }}>
                         {mainItem.description?.replace(/<[^>]+>/g, '').substring(0, 100)}...
                     </p>
@@ -84,20 +98,22 @@ const CategoryBlock = ({ title, link, items, onArticleClick }) => {
                                 alignItems: 'flex-start'
                             }}>
                                 <span style={{ color: '#b5272d', marginRight: '5px', fontSize: '10px' }}>●</span>
-                                <h5
-                                    onClick={() => onArticleClick(item)}
+                                <Link
+                                    to="/news/detail"
+                                    state={{ item: item }}
                                     style={{
                                         fontSize: '14px',
                                         margin: 0,
                                         fontWeight: 'normal',
                                         cursor: 'pointer',
                                         lineHeight: '1.4',
-                                        color: '#333'
+                                        color: '#333',
+                                        textDecoration: 'none'
                                     }}
                                     className="hover-red"
                                 >
                                     {cleanTitle(item.title)}
-                                </h5>
+                                </Link>
                             </li>
                         ))}
                     </ul>

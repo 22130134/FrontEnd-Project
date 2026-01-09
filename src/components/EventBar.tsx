@@ -7,7 +7,7 @@ const EVENTS = [
     "Đại hội Thi đua yêu nước toàn quốc lần thứ XI"
 ];
 
-const EventBar = () => {
+const EventBar: React.FC = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
