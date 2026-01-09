@@ -7,8 +7,14 @@ import HeroSection from "./HeroSection";
 import NewsList from "./NewsList";
 import Sidebar from "./Sidebar";
 import StateView from "./StateView";
-import { CATEGORIES } from "../services/rssService";
-import CategoryBlock from "./CategoryBlock"; // Keeping import if we want to expand later
+import { CATEGORIES, fetchAllSections, NewsItem, HomeSection } from "../services/rssService";
+import CategoryBlock from "./CategoryBlock";
+
+// Define locally since it might not be exported
+interface SectionData extends HomeSection {
+    items: NewsItem[];
+    error: string | null;
+}
 
 function NewsFeed() {
     const { categoryId } = useParams();
@@ -16,28 +22,43 @@ function NewsFeed() {
 
     const activeCategory = categoryId || 'home';
 
-    // Redux State - Huynh Architecture
+    // Redux State
     const { items: news, loading, error } = useSelector((state: RootState) => state.news);
     const [retryKey, setRetryKey] = useState(0);
 
+    // Local State for Home Sections
+    const [homeSections, setHomeSections] = useState<SectionData[]>([]);
+
     useEffect(() => {
-        // Find category info
+        // Redux fetch for main list / hero
         const category = CATEGORIES.find((c) => c.id === activeCategory);
         if (category) {
             dispatch(fetchNewsByCategory({ url: category.url, categoryId: activeCategory }));
         } else {
             dispatch(clearNews());
         }
+
+        // Local fetch for Home Sections (only on Home)
+        if (activeCategory === 'home') {
+            fetchAllSections().then(data => {
+                // Filter out 'focus' as it's typically shown in Hero
+                const others = data.filter(s => s.id !== 'focus');
+                setHomeSections(others);
+            });
+        } else {
+            setHomeSections([]);
+        }
+
     }, [activeCategory, retryKey, dispatch]);
 
-    // Data partitioning
+    // Data partitioning for "Focus" / Category Items
     const heroItems = news.slice(0, 4);
-    const mainFeedItems = news.slice(4, 20);
+    const mainFeedItems = news.slice(4, 20); // Used for Category pages or fallback
     const sidebarItems = news.slice(0, 15);
 
-    const showEmpty = !loading && news.length === 0;
+    const showLoading = loading && news.length === 0;
 
-    if (loading && news.length === 0) {
+    if (showLoading) {
         return (
             <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
                 <StateView state="loading" title="Đang tải tin tức..." message="Vui lòng chờ một chút." />
@@ -59,24 +80,17 @@ function NewsFeed() {
         );
     }
 
-    if (showEmpty) {
-        return (
-            <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
-                <StateView state="empty" title="Chưa có tin" message="Danh mục này hiện chưa có bài viết để hiển thị." />
-            </div>
-        );
-    }
-
+    // Render Logic
     return (
         <main className="home-content" style={{ minHeight: '60vh', paddingBottom: '40px' }}>
             <div className="content_wrapper w1040">
 
-                {/* Hero Section - Full Width (Home Only) */}
+                {/* 1. Hero Section (Home Only) */}
                 {activeCategory === 'home' && (
                     <HeroSection items={heroItems} />
                 )}
 
-                {/* Category Header (Sub-pages Only) */}
+                {/* 2. Category Header (Sub-pages Only) */}
                 {activeCategory !== 'home' && (
                     <div className="category-header">
                         <h2 className="page-title" style={{
@@ -92,7 +106,7 @@ function NewsFeed() {
                     </div>
                 )}
 
-                {/* Main Content Columns */}
+                {/* 3. Main Content Columns */}
                 <div className="content_center">
                     <div
                         className="main-layout"
@@ -105,12 +119,28 @@ function NewsFeed() {
                         }}
                     >
                         <div className="content-col">
-                            {/* 
-                                For now, we reuse NewsList for both Home and Category pages
-                                to conform to the existing Redux slice structure (single list).
-                                Future upgrade: Use 'CategoryBlock' with 'sections' if we update Redux to fetchAllSections.
-                            */}
-                            <NewsList items={mainFeedItems} />
+                            {activeCategory === 'home' ? (
+                                // --- HOME VIEW: Sections ---
+                                <div>
+                                    {homeSections.map(section => (
+                                        <CategoryBlock
+                                            key={section.id}
+                                            title={section.title}
+                                            link={`/category/${section.id}`}
+                                            items={section.items}
+                                        />
+                                    ))}
+                                    {homeSections.length === 0 && !loading && (
+                                        // Fallback if sections haven't loaded but hero has?
+                                        <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                                            Đang tải các chuyên mục...
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                // --- CATEGORY VIEW: List ---
+                                <NewsList items={mainFeedItems} />
+                            )}
                         </div>
 
                         <div className="sidebar-col">
