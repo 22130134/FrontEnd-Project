@@ -9,10 +9,10 @@ import EventBar from "./components/EventBar";
 // @ts-ignore
 import BookmarksPage from "./components/BookmarksPage";
 
-import "./styles/global.css";
+import "./components/css/global.css";
 // Import styles from kiet branch
-import "./styles/baotintuc.css";
-import "./styles/swiper.css";
+import "./components/css/baotintuc.css";
+import "./components/css/swiper.css";
 
 // Hide ads globally (from kiet branch)
 const globalStyles = `
