@@ -5,7 +5,7 @@ import '../components/css/Footer.css';
 const Footer = ({ onCategoryChange }) => {
     return (
         <footer className="footer">
-            <div className="container">
+            <div className="footer_wrapper w1040">
                 <div className="footer-grid">
                     <div className="footer-brand">
                         <span className="footer-logo">BAOTINTUC<span style={{ fontSize: '0.6em' }}>.VN</span></span>

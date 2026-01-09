@@ -1,0 +1,39 @@
+/* Enhanced Header Styles */
+.header .header_wrapper .headerlogo {
+    height: auto !important;
+    /* Allow height to grow */
+    padding: 20px 0;
+    text-align: center;
+}
+
+.header .header_wrapper .headerlogo .headerlogo_wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.header .header_wrapper .headerlogo .headerlogo_wrapper .logo {
+    margin-right: 0 !important;
+    margin-bottom: 15px;
+}
+
+.header .header_wrapper .headerlogo .headerlogo_wrapper .logo img {
+    height: 120px !important;
+    /* Enlarged logo */
+    width: auto;
+}
+
+.header-slogan {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #d21d21;
+    /* Red color matching theme */
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 1);
+    /* Subtle outline effect */
+}
