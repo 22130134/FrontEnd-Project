@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { CATEGORIES } from '../services/rssService';
-import '../components/css/Header.css';
+import { getBookmarks } from "../services/bookmarkService";
+import homeIcon from '../assets/home.svg';
+import logoNew from '../assets/logo_new.png'; // Updated Logo
+import '../components/css/Header.css'; // Make sure this CSS exists or is merged
 
 const Header: React.FC = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location = useLocation();
-    const navigate = useNavigate();
+    const [bookmarkCount, setBookmarkCount] = useState(0);
 
     // Determine current category ID from path
     const getCategoryId = () => {
@@ -20,85 +22,88 @@ const Header: React.FC = () => {
 
     const currentCategory = getCategoryId();
 
-    // Helper for search (demo)
-    const handleSearch = () => {
-        alert("Tính năng tìm kiếm đang phát triển");
-    };
+    useEffect(() => {
+        const update = () => setBookmarkCount(getBookmarks().length);
+        update();
+        window.addEventListener("bookmarks:changed", update);
+        return () => window.removeEventListener("bookmarks:changed", update);
+    }, []);
 
     return (
-        <div className="header-main">
-            {/* Top Bar */}
-            <div className="top-bar">
-                <div className="top-bar-content">
-                    <span className="date-time">
-                        {new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
-                    </span>
-                    <div className="top-right-links">
-                        <a href="#">RSS</a>
-                        <a href="#">Liên hệ</a>
+        <div className="header">
+            <div className="header_wrapper">
+                {/* TOOLBAR */}
+                <div className="toolbar">
+                    <div className="toolbar_wrapper w1040">
+                        <ul>
+                            <li>
+                                <span className="icon">📞</span>
+                                <span className="txt">0914.914.999</span>
+                            </li>
+                            <li>
+                                <span className="icon">✉️</span>
+                                <span className="txt">Email: thuky@baotintuc.vn</span>
+                            </li>
+                            <li>
+                                <Link to="/bookmarks" className="actionlink">
+                                    <span className="icon">🔖</span>
+                                    <span className="txt">
+                                        Đã lưu ({bookmarkCount})
+                                    </span>
+                                </Link>
+                            </li>
+                        </ul>
+                        <div className="input-search">
+                            <input type="text" className="input-info" placeholder="Từ khóa tìm kiếm" />
+                            <a href="#" className="icon-search">🔍</a>
+                        </div>
+                    </div>
+                </div>
+
+                {/* LOGO AREA */}
+                <div className="headerlogo">
+                    <div className="headerlogo_wrapper w1040">
+                        {/* New Logo */}
+                        <Link
+                            to="/"
+                            className="logo"
+                        >
+                            <img src={logoNew} alt="Bao Tin Tuc" />
+                        </Link>
+
+                        {/* Slogan */}
+                        <div className="header-slogan">
+                            TRƯỜNG ĐẠI HỌC NÔNG LÂM TP. HỒ CHÍ MINH
+                        </div>
+                    </div>
+                </div>
+
+                {/* NAVBAR */}
+                <div className="navbar" id="menu">
+                    <div className="navbar_wrapper w1040">
+                        <Link
+                            to="/"
+                            className="iconhome"
+                        >
+                            <img src={homeIcon} alt="Home" />
+                        </Link>
+                        <ul className="list-navbar">
+                            {CATEGORIES.map((cat) => (
+                                <li className="nav-item" key={cat.id}>
+                                    <Link
+                                        to={`/category/${cat.id}`}
+                                        title={cat.name}
+                                        id={`menu_${cat.id}`}
+                                        className={currentCategory === cat.id ? 'active' : ''}
+                                    >
+                                        {cat.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             </div>
-
-            {/* Main Header with Logo and Search */}
-            <header className="container">
-                <div className="header-content">
-                    <div
-                        className="logo"
-                        onClick={() => navigate('/')}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <span className="logo-text">BAOTINTUC<span style={{ color: '#666', fontSize: '0.5em', display: 'block', letterSpacing: '2px', marginTop: '-5px' }}>TTXVN</span></span>
-                    </div>
-
-                    <div className="header-search">
-                        <input type="text" placeholder="Tìm kiếm..." className="search-input" />
-                        <button className="search-btn" onClick={handleSearch}>🔍</button>
-                    </div>
-
-                    {/* Mobile Menu Icon */}
-                    <button
-                        className="mobile-menu-btn"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                        ☰
-                    </button>
-                </div>
-            </header>
-
-            {/* Red Navigation Bar */}
-            <nav className="desktop-nav">
-                <ul className="nav-list">
-                    {CATEGORIES.map((cat) => (
-                        <li key={cat.id}>
-                            <Link
-                                to={cat.id === 'home' ? '/' : `/category/${cat.id}`}
-                                className={`nav-item-btn ${currentCategory === cat.id ? 'active' : ''}`}
-                                style={{ display: 'inline-block', lineHeight: '45px', textDecoration: 'none' }}
-                            >
-                                {cat.name}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            </nav>
-
-            {/* Mobile Nav Dropdown */}
-            {isMenuOpen && (
-                <div className="mobile-dropdown">
-                    {CATEGORIES.map((cat) => (
-                        <Link
-                            key={cat.id}
-                            to={cat.id === 'home' ? '/' : `/category/${cat.id}`}
-                            onClick={() => setIsMenuOpen(false)}
-                            className={`mobile-nav-btn ${currentCategory === cat.id ? 'active' : ''}`}
-                            style={{ display: 'block', textDecoration: 'none' }}
-                        >
-                            {cat.name}
-                        </Link>
-                    ))}
-                </div>
-            )}
         </div>
     );
 };

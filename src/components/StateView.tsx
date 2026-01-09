@@ -81,10 +81,13 @@ export default function StateView({
           text-align: center;
           padding: 18px 10px;
           font-family: inherit;
+<<<<<<< HEAD:src/components/StateView.tsx
         }
         .svlite.compact {
            padding: 10px 0;
            text-align: left;
+=======
+>>>>>>> kiet:src/components/StateView.jsx
         }
 
         .svlite__title{
@@ -93,7 +96,11 @@ export default function StateView({
           gap: 10px;
           font-size: 15px;
           font-weight: 700;
+<<<<<<< HEAD:src/components/StateView.tsx
           color: #222;
+=======
+          color: #222; 
+>>>>>>> kiet:src/components/StateView.jsx
         }
 
         .svlite__message{

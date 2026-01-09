@@ -1,4 +1,3 @@
-/* NewsDetail.css */
 .news-detail-container {
     padding-top: 1rem;
     max-width: 800px;
@@ -22,12 +21,52 @@
     text-decoration: underline;
 }
 
+.detail-title-row{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .detail-title {
     font-size: 32px;
     line-height: 1.3;
     margin-bottom: 15px;
     color: #333;
     font-weight: bold;
+}
+
+/* BOOKMARK BUTTON */
+.bookmark-btn{
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 14px;
+    line-height: 1;
+    height: 40px;
+    min-width: 90px;
+    flex-shrink: 0;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.bookmark-btn:hover{
+    filter: brightness(0.98);
+}
+
+.bookmark-btn.saved{
+    background: #e3f2fd;
+    border-color: #90caf9;
+}
+
+.bookmark-btn-text{
+    white-space: nowrap;
+    font-weight: 600;
 }
 
 .detail-meta {

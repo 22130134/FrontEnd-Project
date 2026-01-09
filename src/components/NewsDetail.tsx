@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
 import StateView from './StateView';
 import './css/NewsDetail.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NewsItem } from '../services/rssService';
+import { isBookmarked, toggleBookmark } from '../services/bookmarkService';
 
 
 const MAX_RETRY = 3;
@@ -24,16 +24,27 @@ const NewsDetail: React.FC = () => {
     const [retryCount, setRetryCount] = useState(0);
     const [retryKey, setRetryKey] = useState(0);
 
-    const handleBack = () => {
-        // Simple back
-        navigate(-1);
-    };
+    // Bookmark state
+    const [saved, setSaved] = useState(false);
 
-    // Reset trang thái retry khi đổi bài viết
+    // Check bookmark status on load
     useEffect(() => {
+        if (item?.link) {
+            setSaved(isBookmarked(item.link));
+        }
         setRetryCount(0);
         setRetryKey(0);
     }, [item]);
+
+    const handleToggleSave = () => {
+        if (!item) return;
+        const { saved: nextSaved } = toggleBookmark(item);
+        setSaved(nextSaved);
+    };
+
+    const handleBack = () => {
+        navigate(-1);
+    };
 
     // Load nội dung bài viết
     useEffect(() => {
@@ -104,7 +115,30 @@ const NewsDetail: React.FC = () => {
                 <span>Chi tiết</span>
             </div>
 
-            <h1 className="detail-title">{item.title}</h1>
+            {/* TITLE + BOOKMARK ROW */}
+            <div className="detail-title-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px' }}>
+                <h1 className="detail-title" style={{ flex: 1 }}>{item.title}</h1>
+
+                <button
+                    type="button"
+                    className={`bookmark-btn ${saved ? "saved" : ""}`}
+                    onClick={handleToggleSave}
+                    title={saved ? "Bỏ lưu" : "Lưu bài viết"}
+                    style={{
+                        background: 'transparent',
+                        border: '1px solid #ddd',
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        color: saved ? '#e6ae05' : '#333'
+                    }}
+                >
+                    <span className="bookmark-btn-text">
+                        {saved ? "🔖 Đã lưu" : "📑 Lưu bài"}
+                    </span>
+                </button>
+            </div>
 
             <div className="detail-meta">
                 <span>
