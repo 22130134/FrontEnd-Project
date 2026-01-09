@@ -1,3 +1,4 @@
+// @ts-ignore
 import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import Header from "./styles/Header";
