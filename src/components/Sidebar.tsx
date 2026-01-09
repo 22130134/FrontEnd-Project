@@ -5,6 +5,8 @@ import { NewsItem } from '../services/rssService';
 
 interface SidebarProps {
     latestItems: NewsItem[];
+    // Keeping compat with previous version if it had onArticleClick, but we ignore it for Link
+    onArticleClick?: (item: NewsItem) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ latestItems }) => {
@@ -40,16 +42,15 @@ const Sidebar: React.FC<SidebarProps> = ({ latestItems }) => {
                         to="/news/detail"
                         state={{ item }}
                         className="sidebar-item-link"
-<<<<<<< HEAD:src/components/Sidebar.tsx
-                        style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-=======
                         style={{
+                            display: 'block',
+                            textDecoration: 'none',
+                            color: 'inherit',
                             marginBottom: '15px',
                             paddingBottom: '15px',
                             borderBottom: '1px solid #eee',
                             cursor: 'pointer'
                         }}
->>>>>>> kiet:src/components/Sidebar.js
                     >
                         <div className="sidebar-item">
                             <h4 className="sidebar-item-title" style={{

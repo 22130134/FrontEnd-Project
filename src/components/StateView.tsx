@@ -2,92 +2,89 @@
 import React from "react";
 
 interface StateViewProps {
-    state: "loading" | "empty" | "error" | null;
-    title?: string;
-    message?: string;
-    onRetry?: () => void;
-    retryText?: string;
-    linkHref?: string;
-    linkText?: string;
-    className?: string;
-    // compact prop used in NewsDetail but not in original signature explicitly
-    compact?: boolean;
+  state: "loading" | "empty" | "error" | null;
+  title?: string;
+  message?: string;
+  onRetry?: () => void;
+  retryText?: string;
+  linkHref?: string;
+  linkText?: string;
+  className?: string;
+  // compact prop used in NewsDetail but not in original signature explicitly
+  compact?: boolean;
 }
 
 export default function StateView({
-    state,
-    title,
-    message,
-    onRetry,
-    retryText = "Thử lại",
-    linkHref,
-    linkText = "Mở bài gốc",
-    className = "",
-    compact = false
+  state,
+  title,
+  message,
+  onRetry,
+  retryText = "Thử lại",
+  linkHref,
+  linkText = "Mở bài gốc",
+  className = "",
+  compact = false
 }: StateViewProps) {
-    if (!state) return null;
+  if (!state) return null;
 
-    const isLoading = state === "loading";
-    const isEmpty = state === "empty";
-    const isError = state === "error";
+  const isLoading = state === "loading";
+  const isEmpty = state === "empty";
+  const isError = state === "error";
 
-    const defaultTitle = isLoading
-        ? "Đang tải nội dung đầy đủ..."
-        : isEmpty
-            ? "Không có dữ liệu"
-            : "Nguồn đang hạn chế truy cập bài viết đầy đủ";
+  const defaultTitle = isLoading
+    ? "Đang tải nội dung đầy đủ..."
+    : isEmpty
+      ? "Không có dữ liệu"
+      : "Nguồn đang hạn chế truy cập bài viết đầy đủ";
 
-    const defaultMessage = isLoading
-        ? "Vui lòng chờ một chút."
-        : isEmpty
-            ? "Hiện chưa có nội dung để hiển thị."
-            : "Đang hiển thị nội dung tóm tắt từ RSS.";
+  const defaultMessage = isLoading
+    ? "Vui lòng chờ một chút."
+    : isEmpty
+      ? "Hiện chưa có nội dung để hiển thị."
+      : "Đang hiển thị nội dung tóm tắt từ RSS.";
 
-    const t = title ?? defaultTitle;
-    const m = message ?? defaultMessage;
+  const t = title ?? defaultTitle;
+  const m = message ?? defaultMessage;
 
-    return (
-        <div
-            className={`svlite ${className} ${compact ? 'compact' : ''}`}
-            role={isError ? "alert" : "status"}
-            aria-busy={isLoading ? "true" : "false"}
-        >
-            <div className="svlite__title">
-                {isLoading ? <span className="svlite__spinner" aria-hidden="true" /> : null}
-                <span>{t}</span>
-            </div>
+  return (
+    <div
+      className={`svlite ${className} ${compact ? 'compact' : ''}`}
+      role={isError ? "alert" : "status"}
+      aria-busy={isLoading ? "true" : "false"}
+    >
+      <div className="svlite__title">
+        {isLoading ? <span className="svlite__spinner" aria-hidden="true" /> : null}
+        <span>{t}</span>
+      </div>
 
-            {m ? <div className="svlite__message">{m}</div> : null}
+      {m ? <div className="svlite__message">{m}</div> : null}
 
-            {(isError || isEmpty) && (onRetry || linkHref) ? (
-                <div className="svlite__actions">
-                    {typeof onRetry === "function" ? (
-                        <button className="svlite__btn" onClick={onRetry} type="button">
-                            {retryText}
-                        </button>
-                    ) : null}
+      {(isError || isEmpty) && (onRetry || linkHref) ? (
+        <div className="svlite__actions">
+          {typeof onRetry === "function" ? (
+            <button className="svlite__btn" onClick={onRetry} type="button">
+              {retryText}
+            </button>
+          ) : null}
 
-                    {linkHref ? (
-                        <a className="svlite__link" href={linkHref} target="_blank" rel="noreferrer">
-                            {linkText}
-                        </a>
-                    ) : null}
-                </div>
-            ) : null}
+          {linkHref ? (
+            <a className="svlite__link" href={linkHref} target="_blank" rel="noreferrer">
+              {linkText}
+            </a>
+          ) : null}
+        </div>
+      ) : null}
 
-            <style>{`
+      <style>{`
         .svlite{
           width: 100%;
           text-align: center;
           padding: 18px 10px;
           font-family: inherit;
-<<<<<<< HEAD:src/components/StateView.tsx
         }
         .svlite.compact {
            padding: 10px 0;
            text-align: left;
-=======
->>>>>>> kiet:src/components/StateView.jsx
         }
 
         .svlite__title{
@@ -96,11 +93,7 @@ export default function StateView({
           gap: 10px;
           font-size: 15px;
           font-weight: 700;
-<<<<<<< HEAD:src/components/StateView.tsx
           color: #222;
-=======
-          color: #222; 
->>>>>>> kiet:src/components/StateView.jsx
         }
 
         .svlite__message{
@@ -155,6 +148,6 @@ export default function StateView({
           .svlite__spinner{ animation: none; }
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }
