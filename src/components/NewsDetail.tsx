@@ -152,7 +152,7 @@ const NewsDetail: React.FC = () => {
             setLoading(true);
             setError(null);
             try {
-                const html = await fetchFullArticle(item.link);
+                const html = await fetchFullArticle(activeItem.link);
                 const parsed = parseArticleContent(html);
                 setFullContent(parsed);
             } catch (e) {
