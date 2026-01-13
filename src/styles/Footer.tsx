@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../components/css/Footer.css';
-
 const Footer: React.FC = () => {
     const navigate = useNavigate();
 
@@ -66,7 +65,6 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="footer-bottom">
                     <p>Bản quyền thuộc về Báo Tin tức - TTXVN. Cấm sao chép dưới mọi hình thức nếu không có sự chấp thuận bằng văn bản.</p>
                 </div>
