@@ -204,29 +204,40 @@ const NewsDetail: React.FC = () => {
         return stripFirstImage(rawDisplayContent);
     }, [fullContent, rawDisplayContent]);
     // ===== TÁCH SAPO / TIÊU ĐIỂM (đoạn <p> đầu tiên) =====
-    const sapo = useMemo(() => {
-        if (!cleanedContent) return null;
+// ===== TÁCH SUBTITLE + BODY (KHÔNG TÁCH SAPO) =====
+    const { subtitle, bodyFinal } = useMemo(() => {
+        if (!cleanedContent) {
+            return { subtitle: null, bodyFinal: cleanedContent };
+        }
 
-        // lấy <p> đầu tiên làm sapo
-        const match = cleanedContent.match(/<p[^>]*>(.*?)<\/p>/i);
-        return match ? match[0] : null;
-    }, [cleanedContent]);
+        let html = cleanedContent;
+        let subtitleHtml: string | null = null;
 
-    const bodyWithoutSapo = useMemo(() => {
-        if (!cleanedContent || !sapo) return cleanedContent;
-        return cleanedContent.replace(sapo, '');
-    }, [cleanedContent, sapo]);
-    const bodyFinal = useMemo(() => {
-        let html = normalizeParagraphWeight(bodyWithoutSapo);
+        // 1️⃣ Subtitle = <p><strong>...</strong></p> đầu tiên
+        const subtitleMatch = html.match(
+            /^\s*<p[^>]*>\s*<(strong|b)[^>]*>([\s\S]*?)<\/\1>\s*<\/p>/i
+        );
 
-        // Nếu dòng đầu là <h2> thì đổi thành <p>
-        html = html.replace(
+        if (subtitleMatch) {
+            subtitleHtml = subtitleMatch[0];
+            html = html.replace(subtitleMatch[0], '');
+        }
+
+        // 2️⃣ Body = phần còn lại (KHÔNG in đậm đoạn đầu)
+        let body = normalizeParagraphWeight(html);
+
+        // Nếu body mở đầu bằng h2 → đổi về p
+        body = body.replace(
             /^\s*<h2[^>]*>([\s\S]*?)<\/h2>/i,
             '<p>$1</p>'
         );
 
-        return html;
-    }, [bodyWithoutSapo]);
+        return {
+            subtitle: subtitleHtml,
+            bodyFinal: body
+        };
+    }, [cleanedContent]);
+
 
     const showEmpty = !loading && !error && (!cleanedContent || cleanedContent.trim().length === 0);
     const canRetry = retryCount < MAX_RETRY;
@@ -402,7 +413,7 @@ const NewsDetail: React.FC = () => {
                         {/* Floating share bar */}
                         <div className="detail-float-actions" aria-label="Chia sẻ">
                             <button className="fab fab-home" onClick={() => navigate('/')} title="Trang chủ" type="button">
-                                🏠
+                                <img src="/media/homelogo.png" alt="Trang chủ" />
                             </button>
 
                             <a
@@ -412,7 +423,7 @@ const NewsDetail: React.FC = () => {
                                 rel="noreferrer"
                                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(activeItem.link)}`}
                             >
-                                f
+                                <img src="/media/iconfb1.png" alt="Facebook" />
                             </a>
 
                             <a
@@ -422,7 +433,7 @@ const NewsDetail: React.FC = () => {
                                 rel="noreferrer"
                                 href={`https://button-share.zalo.me/share_external?d=${encodeURIComponent(activeItem.link)}`}
                             >
-                                Z
+                                <img src="/media/iconzl1.png" alt="Zalo" />
                             </a>
 
                             <a
@@ -430,8 +441,17 @@ const NewsDetail: React.FC = () => {
                                 title="Gửi mail"
                                 href={`mailto:?subject=${encodeURIComponent(activeItem.title)}&body=${encodeURIComponent(activeItem.link)}`}
                             >
-                                ✉️
+                                <img src="/media/emaillogo.png" alt="Email" />
                             </a>
+                            <button
+                                className={`fab fab-bookmark ${saved ? 'saved' : ''}`}
+                                onClick={handleToggleSave}
+                                title={saved ? 'Đã lưu bài viết' : 'Lưu bài viết'}
+                                type="button"
+                            >
+                                <span className="fab-icon">{saved ? '🔖' : '📑'}</span>
+                            </button>
+
                         </div>
 
                         {/* Breadcrumb */}
@@ -441,15 +461,17 @@ const NewsDetail: React.FC = () => {
                             <span onClick={() => navigate(-1)}>{categoryName}</span>
                         </div>
 
-                        {/* Title */}
+                        {/* TIÊU ĐỀ */}
                         <h1 className="detail-title baotintuc-title">{activeItem.title}</h1>
-                        {/* SAPO / TIÊU ĐIỂM */}
-                        {sapo && (
+
+                        {/* TIÊU ĐỀ PHỤ */}
+                        {subtitle && (
                             <div
-                                className="article-sapo"
-                                dangerouslySetInnerHTML={{ __html: sapo }}
+                                className="article-subtitle"
+                                dangerouslySetInnerHTML={{ __html: subtitle }}
                             />
                         )}
+
 
                         {/* Date + Category + Bookmark */}
                         <div className="detail-topbar">
@@ -468,10 +490,19 @@ const NewsDetail: React.FC = () => {
                                 <strong className="detail-cate">{categoryName}</strong>
                             </div>
 
-                            <button className={`bookmark-btn ${saved ? 'saved' : ''}`} onClick={handleToggleSave} type="button">
-                                <span className="icon">{saved ? '🔖' : '📑'}</span>
-                                <span>{saved ? 'Đã lưu' : 'Lưu bài'}</span>
-                            </button>
+                            <a
+                                className="google-news-link"
+                                href="https://news.google.com/publications/CAAqJggKIiBDQklTRWdnTWFnNEtER0poYjNScGJuUjFZeTUyYmlnQVAB?hl=vi&gl=VN&ceid=VN%3Avi"
+                                target="_blank"
+                                rel="noreferrer"
+                                title="Báo Tin tức trên Google News"
+                            >
+                                <img
+                                    src="/media/google-news.png"
+                                    alt="Báo Tin tức trên Google News"
+                                />
+                            </a>
+
                         </div>
 
                         {/*TIN LIÊN QUAN */}
@@ -621,7 +652,6 @@ const NewsDetail: React.FC = () => {
                             )}
                         </section>
                     </div>
-
                     {/* RIGHT */}
                     <aside className="right-bar">
                         {/* TIN MỚI NHẤT */}
