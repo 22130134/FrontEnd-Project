@@ -30,7 +30,6 @@ const MainLayout = () => {
             <Header />
             <EventBar />
             <Outlet />
-            <TTXVNMediaStrip />
             <Footer />
         </div>
     );
@@ -43,7 +42,7 @@ function App() {
                 <Route index element={<NewsFeed />} />
                 <Route path="category/:categoryId" element={<NewsFeed />} />
                 <Route path="news/detail" element={<NewsDetail />} />
-                <Route path="bookmarks" element={<BookmarksPage />} />
+
             </Route>
         </Routes>
     );

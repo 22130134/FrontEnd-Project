@@ -250,7 +250,7 @@ function NewsFeed() {
                             {/* DOANH NGHIỆP - SẢN PHẨM - DỊCH VỤ (Full Width Section) */}
                             {doanhNghiepSection && (
                                 <div className="doanh-nghiep-section" style={{ marginTop: '30px', clear: 'both' }}>
-                                    <div className="dn-header" style={{ borderTop: '4px solid #d21d21', position: 'relative' }}>
+                                    <div className="dn-header" style={{ position: 'relative' }}>
                                         <h2 style={{
                                             background: '#d21d21',
                                             color: '#fff',
@@ -317,10 +317,9 @@ function NewsFeed() {
                     )}
 
                     {/* Partner Section (Home Only) */}
+                    {/* Partner Section (Home Only) */}
                     {activeCategory === 'home' && (
-                        <div className="content_bottom">
-                            <MediaStrip />
-                        </div>
+                        <MediaStrip />
                     )}
                 </div>
             </main>
