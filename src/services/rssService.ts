@@ -25,7 +25,21 @@ export const CATEGORIES: Category[] = [
     { name: "Pháp luật", url: "https://baotintuc.vn/phap-luat.rss", id: "phap-luat" },
     { name: "Văn hóa", url: "https://baotintuc.vn/van-hoa.rss", id: "van-hoa" },
     { name: "Giáo dục", url: "https://baotintuc.vn/giao-duc.rss", id: "giao-duc" },
-    { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" }
+    { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" },
+    { name: "Hồ sơ", url: "https://baotintuc.vn/ho-so.rss", id: "ho-so" },
+    { name: "Quân sự", url: "https://baotintuc.vn/quan-su.rss", id: "quan-su" },
+    { name: "Khoa học - Công nghệ", url: "https://baotintuc.vn/khoa-hoc-cong-nghe.rss", id: "khoa-hoc" },
+    { name: "Biển đảo", url: "https://baotintuc.vn/bien-dao-viet-nam.rss", id: "bien-dao" },
+    { name: "Y tế", url: "https://baotintuc.vn/suc-khoe.rss", id: "y-te" },
+    { name: "Địa phương", url: "https://baotintuc.vn/dia-phuong.rss", id: "dia-phuong" },
+    { name: "Video", url: "https://baotintuc.vn/video.rss", id: "video" },
+    { name: "Góc nhìn", url: "https://baotintuc.vn/goc-nhin.rss", id: "goc-nhin" },
+    { name: "Ảnh", url: "https://baotintuc.vn/anh.rss", id: "anh" },
+    { name: "Infographics", url: "https://baotintuc.vn/infographics.rss", id: "infographics" },
+    { name: "Đặc biệt", url: "https://baotintuc.vn/emagazine.rss", id: "emagazine" },
+    { name: "Bạn đọc", url: "https://baotintuc.vn/ban-doc.rss", id: "ban-doc" },
+    { name: "Dân tộc miền núi", url: "https://baotintuc.vn/giai-ma-muon-mat.rss", id: "dan-toc-mien-nui" },
+    { name: "Ảnh 360", url: "https://baotintuc.vn/anh-360.rss", id: "anh-360" }
 ];
 
 export interface HomeSection {
