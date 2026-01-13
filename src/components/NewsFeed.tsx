@@ -7,6 +7,7 @@ import NewsList from "./NewsList";
 import StateView from "./StateView";
 import TopNews from "./TopNews";
 import MediaStrip from './MediaStrip';
+import CategoryLayout from './CategoryLayout';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
@@ -96,7 +97,15 @@ function NewsFeed() {
 
     // Helper for images
     const getImage = (item: NewsItem) => {
-        let image = item.thumbnail || item.enclosure?.link;
+        // 1. Check enclosure: ensure it's an image. If it's a video (mp4, etc), do NOT use as image.
+        if (item.enclosure && item.enclosure.link) {
+            const ext = item.enclosure.link.split('.').pop()?.toLowerCase();
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext || '')) {
+                return item.enclosure.link;
+            }
+        }
+
+        let image = item.thumbnail;
 
         const isValidImage = (url: string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
 
@@ -120,6 +129,12 @@ function NewsFeed() {
         if (!image) {
             return 'https://placehold.co/400x250/e0e0e0/999999?text=VIDEO';
         }
+
+        // Fix for blocked video-api images using weserv.nl proxy
+        if (image.includes('video-api.baotintuc.vn')) {
+            return `https://images.weserv.nl/?url=${encodeURIComponent(image.replace('https://', ''))}`;
+        }
+
         return image;
     };
     const cleanTitle = (t: string) => t?.replace(/<[^>]+>/g, '').trim();
@@ -190,8 +205,15 @@ function NewsFeed() {
                                     >
                                         {contentTopItems.map((item, idx) => (
                                             <SwiperSlide key={idx} className="li-item" style={{ width: '270px' }}>
-                                                <Link to="/news/detail" state={{ item }} className="item_thumb">
+                                                <Link to="/news/detail" state={{ item }} className="item_thumb" style={{ position: 'relative', display: 'block' }}>
                                                     <img src={getImage(item)} alt={cleanTitle(item.title)} />
+                                                    <div className="icon-play" style={{
+                                                        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                                                        width: '40px', height: '40px', background: 'rgba(0,0,0,0.6)', borderRadius: '50%',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2
+                                                    }}>
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
+                                                    </div>
                                                     <span className="note">VIDEO</span>
                                                 </Link>
                                                 <Link to="/news/detail" state={{ item }} className="item_title">
@@ -293,24 +315,23 @@ function NewsFeed() {
                                 </div>
                             )}
                         </>
+                    ) : activeCategory === 'video' ? (
+                        // --- VIDEO CATEGORY VIEW ---
+                        <div style={{ marginTop: '20px' }}>
+                            <CategoryLayout
+                                title={CATEGORIES.find(c => c.id === activeCategory)?.name || ''}
+                                items={categoryFeedItems}
+                            />
+                        </div>
                     ) : (
-                        // --- CATEGORY VIEW ---
+                        // --- STANDARD CATEGORY VIEW ---
                         <div className="content_center">
                             <div className="main-layout" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
                                 <div className="content-col">
                                     <NewsList items={categoryFeedItems} />
                                 </div>
                                 <div className="sidebar-col">
-                                    {/* Sidebar removed from Home but kept here? Or User wants it gone everywhere? 
-                                       User said "xóa boxnew ở cc right", usually refers to Home. 
-                                       For Category, a sidebar is standard. I'll import Sidebar but not use it if removed from imports.
-                                       Wait, I removed Sidebar import in my thought process, but code needs it for Category View?
-                                       Let's keep Sidebar for Category View as it wasn't explicitly forbidden there.
-                                       Ah, I need to Import `Sidebar` at top.
-                                   */}
-                                    {/* <Sidebar items={news.slice(0, 10)} /> - I'll comment out for now or re-add import if needed for cat pages.
-                                       Let's assume for now focused on Home. 
-                                   */}
+                                    {/* Sidebar for standard categories */}
                                 </div>
                             </div>
                         </div>
