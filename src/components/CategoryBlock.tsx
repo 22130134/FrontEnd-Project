@@ -17,114 +17,66 @@ const CategoryBlock: React.FC<CategoryBlockProps> = ({ title, link, items }) => 
     // Helpers
     const getImage = (item: NewsItem) => {
         let image = item.thumbnail || item.enclosure?.link;
-        if (!image) {
-            const imgMatch = item.description?.match(/src="([^"]+)"/);
-            image = imgMatch ? imgMatch[1] : 'https://placehold.co/400x300?text=No+Image';
+        const isValidImage = (url: string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+
+        if (!image || !isValidImage(image)) {
+            const pattern = /src=["']([^"']+)["']/;
+            const match = item.description?.match(pattern) || item.content?.match(pattern);
+            const potential = match ? match[1] : '';
+
+            if (potential && isValidImage(potential)) {
+                image = potential;
+            } else if (potential && (potential.includes('youtube.com') || potential.includes('youtu.be'))) {
+                const ytMatch = potential.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/);
+                if (ytMatch) {
+                    image = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                }
+            }
         }
-        return image;
+
+        return image || 'https://placehold.co/400x250/e0e0e0/999999?text=NO+IMAGE';
     };
+
     const cleanTitle = (t: string) => t?.replace(/<[^>]+>/g, '').trim();
 
     return (
-        <div className="category-block" style={{ marginBottom: '30px' }}>
-            {/* Header with Red Border Left */}
-            <div className="cat-header" style={{
-                borderLeft: '5px solid #b5272d',
-                paddingLeft: '10px',
-                marginBottom: '15px',
-                display: 'flex',
-                alignItems: 'center'
-            }}>
-                <h3 style={{
-                    margin: 0,
-                    textTransform: 'uppercase',
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    color: '#b5272d'
-                }}>
-                    <Link to={link || '#'} style={{ color: 'inherit', textDecoration: 'none' }}>
-                        {title}
-                    </Link>
-                </h3>
+        <div className="ccr-group">
+            <div className="ccr_threadbar">
+                <Link to={link || '#'} className="threadbar_topic" title={title}>
+                    {title}
+                </Link>
+                {/* Optional: Add show-more-pc or sub-categories here if available */}
             </div>
 
-            <div className="cat-content" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                {/* Main Article (Left) */}
-                <div className="cat-main">
-                    <Link
-                        to="/news/detail"
-                        state={{ item: mainItem }}
-                        className="cat-thumb"
-                        style={{ cursor: 'pointer', overflow: 'hidden', borderRadius: '4px', marginBottom: '10px', display: 'block' }}
-                    >
-                        <img
-                            src={getImage(mainItem)}
-                            alt={mainItem.title}
-                            style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
-                        />
+            <div className="ccr-box">
+                {/* Main Article */}
+                <div className="box_news">
+                    <Link to="/news/detail" state={{ item: mainItem }} className="news_img" title={cleanTitle(mainItem.title)}>
+                        <img src={getImage(mainItem)} alt={cleanTitle(mainItem.title)} />
                     </Link>
-                    <Link
-                        to="/news/detail"
-                        state={{ item: mainItem }}
-                        style={{ textDecoration: 'none' }}
-                    >
-                        <h4
-                            style={{
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                                margin: '0 0 5px 0',
-                                cursor: 'pointer',
-                                lineHeight: '1.4',
-                                color: '#000'
-                            }}
-                        >
-                            {cleanTitle(mainItem.title)}
-                        </h4>
-                    </Link>
-                    <p style={{ fontSize: '13px', color: '#666', lineHeight: '1.5', margin: 0 }}>
-                        {mainItem.description?.replace(/<[^>]+>/g, '').substring(0, 100)}...
-                    </p>
+                    <div className="news_info">
+                        <Link to="/news/detail" state={{ item: mainItem }} className="news_title" title={cleanTitle(mainItem.title)}>
+                            <h3>{cleanTitle(mainItem.title)}</h3>
+                        </Link>
+                        <p className="news_des">
+                            {mainItem.description?.replace(/<[^>]+>/g, '').substring(0, 120)}...
+                        </p>
+                    </div>
                 </div>
 
-                {/* Sub Articles (Right) */}
-                <div className="cat-sub">
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                        {subItems.map((item, idx) => (
-                            <li key={idx} style={{
-                                marginBottom: '10px',
-                                paddingBottom: '10px',
-                                borderBottom: idx < subItems.length - 1 ? '1px dashed #eee' : 'none',
-                                display: 'flex',
-                                alignItems: 'flex-start'
-                            }}>
-                                <span style={{ color: '#b5272d', marginRight: '5px', fontSize: '10px' }}>●</span>
-                                <Link
-                                    to="/news/detail"
-                                    state={{ item: item }}
-                                    style={{
-                                        fontSize: '14px',
-                                        margin: 0,
-                                        fontWeight: 'normal',
-                                        cursor: 'pointer',
-                                        lineHeight: '1.4',
-                                        color: '#333',
-                                        textDecoration: 'none'
-                                    }}
-                                    className="hover-red"
-                                >
+                {/* Sub Articles List */}
+                <ul className="ccr-list">
+                    {subItems.map((item, idx) => (
+                        <li className="ccr-item" key={idx}>
+                            <h4>
+                                <Link to="/news/detail" state={{ item }} title={cleanTitle(item.title)}>
                                     {cleanTitle(item.title)}
                                 </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                            </h4>
+                        </li>
+                    ))}
+                </ul>
             </div>
-            <style>{`
-                .hover-red:hover { color: #b5272d !important; }
-                @media (max-width: 600px) {
-                    .cat-content { grid-template-columns: 1fr !important; }
-                }
-            `}</style>
         </div>
     );
 };
