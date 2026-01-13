@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
-import Header from "./styles/Header";
-import Footer from "./styles/Footer";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import NewsDetail from "./components/NewsDetail";
 import NewsFeed from "./components/NewsFeed";
 // @ts-ignore

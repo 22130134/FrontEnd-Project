@@ -40,7 +40,25 @@ export const HOME_SECTIONS: HomeSection[] = [
     { id: 'the-gioi', title: 'Thế giới', url: 'https://baotintuc.vn/the-gioi.rss' },
     { id: 'kinh-te', title: 'Kinh tế', url: 'https://baotintuc.vn/kinh-te.rss' },
     { id: 'xa-hoi', title: 'Xã hội', url: 'https://baotintuc.vn/xa-hoi.rss' },
-    { id: 'phap-luat', title: 'Pháp luật', url: 'https://baotintuc.vn/phap-luat.rss' }
+    { id: 'phap-luat', title: 'Pháp luật', url: 'https://baotintuc.vn/phap-luat.rss' },
+    { id: 'van-hoa', title: 'Văn hóa', url: 'https://baotintuc.vn/van-hoa.rss' },
+    { id: 'giao-duc', title: 'Giáo dục', url: 'https://baotintuc.vn/giao-duc.rss' },
+    { id: 'the-thao', title: 'Thể thao', url: 'https://baotintuc.vn/the-thao.rss' },
+    { id: 'y-te', title: 'Y tế', url: 'https://baotintuc.vn/y-te.rss' },
+    { id: 'quan-su', title: 'Quân sự', url: 'https://baotintuc.vn/quan-su.rss' },
+    { id: 'khoa-hoc', title: 'Khoa học', url: 'https://baotintuc.vn/khoa-hoc-cong-nghe.rss' }
+];
+
+// Special Sections for Multimedia strip
+export const MULTIMEDIA_SECTIONS: HomeSection[] = [
+    { id: 'tin-tuc-tv', title: 'TIN TỨC TV', url: '#' },
+    { id: 'video', title: 'VIDEO', url: 'https://baotintuc.vn/video.rss' },
+    { id: 'anh', title: 'ẢNH', url: 'https://baotintuc.vn/anh.rss' },
+    { id: 'infographic', title: 'INFOGRAPHIC', url: 'https://baotintuc.vn/infographics.rss' },
+    { id: 'megastory', title: 'MEGASTORY', url: '#' },
+    { id: 'anh-360', title: 'ẢNH 360', url: '#' },
+    { id: 'talk-show', title: 'TALK SHOW', url: '#' },
+    { id: 'podcast', title: 'PODCAST', url: '#' },
 ];
 
 interface RSSSectionResult extends HomeSection {
@@ -63,10 +81,13 @@ export const fetchFeed = async (rssUrl: string): Promise<{ items: NewsItem[] }> 
     }
 };
 
-export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
-    // Fetch all home sections in parallel
-    const promises = HOME_SECTIONS.map(async (section) => {
+export const fetchSections = async (sections: HomeSection[]): Promise<RSSSectionResult[]> => {
+    const promises = sections.map(async (section) => {
         try {
+            // Handle placeholder URLs
+            if (section.url === '#') {
+                return { ...section, items: [], error: null };
+            }
             const data = await fetchFeed(section.url);
             return {
                 ...section,
@@ -83,4 +104,8 @@ export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
         }
     });
     return Promise.all(promises);
+};
+
+export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
+    return fetchSections(HOME_SECTIONS);
 };
