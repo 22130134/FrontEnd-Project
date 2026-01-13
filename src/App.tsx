@@ -1,8 +1,8 @@
 // @ts-ignore
 import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
-import Header from "./styles/Header";
-import Footer from "./styles/Footer";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import NewsDetail from "./components/NewsDetail";
 import NewsFeed from "./components/NewsFeed";
 // @ts-ignore
@@ -30,7 +30,6 @@ const MainLayout = () => {
             <Header />
             <EventBar />
             <Outlet />
-            <TTXVNMediaStrip />
             <Footer />
         </div>
     );
@@ -43,7 +42,7 @@ function App() {
                 <Route index element={<NewsFeed />} />
                 <Route path="category/:categoryId" element={<NewsFeed />} />
                 <Route path="news/detail" element={<NewsDetail />} />
-                <Route path="bookmarks" element={<BookmarksPage />} />
+
             </Route>
         </Routes>
     );

@@ -25,7 +25,21 @@ export const CATEGORIES: Category[] = [
     { name: "Pháp luật", url: "https://baotintuc.vn/phap-luat.rss", id: "phap-luat" },
     { name: "Văn hóa", url: "https://baotintuc.vn/van-hoa.rss", id: "van-hoa" },
     { name: "Giáo dục", url: "https://baotintuc.vn/giao-duc.rss", id: "giao-duc" },
-    { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" }
+    { name: "Thể thao", url: "https://baotintuc.vn/the-thao.rss", id: "the-thao" },
+    { name: "Hồ sơ", url: "https://baotintuc.vn/ho-so.rss", id: "ho-so" },
+    { name: "Quân sự", url: "https://baotintuc.vn/quan-su.rss", id: "quan-su" },
+    { name: "Khoa học - Công nghệ", url: "https://baotintuc.vn/khoa-hoc-cong-nghe.rss", id: "khoa-hoc" },
+    { name: "Biển đảo", url: "https://baotintuc.vn/bien-dao-viet-nam.rss", id: "bien-dao" },
+    { name: "Y tế", url: "https://baotintuc.vn/suc-khoe.rss", id: "y-te" },
+    { name: "Địa phương", url: "https://baotintuc.vn/dia-phuong.rss", id: "dia-phuong" },
+    { name: "Video", url: "https://baotintuc.vn/video.rss", id: "video" },
+    { name: "Góc nhìn", url: "https://baotintuc.vn/goc-nhin.rss", id: "goc-nhin" },
+    { name: "Ảnh", url: "https://baotintuc.vn/anh.rss", id: "anh" },
+    { name: "Infographics", url: "https://baotintuc.vn/infographics.rss", id: "infographics" },
+    { name: "Đặc biệt", url: "https://baotintuc.vn/emagazine.rss", id: "emagazine" },
+    { name: "Bạn đọc", url: "https://baotintuc.vn/ban-doc.rss", id: "ban-doc" },
+    { name: "Dân tộc miền núi", url: "https://baotintuc.vn/giai-ma-muon-mat.rss", id: "dan-toc-mien-nui" },
+    { name: "Ảnh 360", url: "https://baotintuc.vn/anh-360.rss", id: "anh-360" }
 ];
 
 export interface HomeSection {
@@ -40,7 +54,25 @@ export const HOME_SECTIONS: HomeSection[] = [
     { id: 'the-gioi', title: 'Thế giới', url: 'https://baotintuc.vn/the-gioi.rss' },
     { id: 'kinh-te', title: 'Kinh tế', url: 'https://baotintuc.vn/kinh-te.rss' },
     { id: 'xa-hoi', title: 'Xã hội', url: 'https://baotintuc.vn/xa-hoi.rss' },
-    { id: 'phap-luat', title: 'Pháp luật', url: 'https://baotintuc.vn/phap-luat.rss' }
+    { id: 'phap-luat', title: 'Pháp luật', url: 'https://baotintuc.vn/phap-luat.rss' },
+    { id: 'van-hoa', title: 'Văn hóa', url: 'https://baotintuc.vn/van-hoa.rss' },
+    { id: 'giao-duc', title: 'Giáo dục', url: 'https://baotintuc.vn/giao-duc.rss' },
+    { id: 'the-thao', title: 'Thể thao', url: 'https://baotintuc.vn/the-thao.rss' },
+    { id: 'y-te', title: 'Y tế', url: 'https://baotintuc.vn/y-te.rss' },
+    { id: 'quan-su', title: 'Quân sự', url: 'https://baotintuc.vn/quan-su.rss' },
+    { id: 'khoa-hoc', title: 'Khoa học', url: 'https://baotintuc.vn/khoa-hoc-cong-nghe.rss' }
+];
+
+// Special Sections for Multimedia strip
+export const MULTIMEDIA_SECTIONS: HomeSection[] = [
+    { id: 'tin-tuc-tv', title: 'TIN TỨC TV', url: '#' },
+    { id: 'video', title: 'VIDEO', url: 'https://baotintuc.vn/video.rss' },
+    { id: 'anh', title: 'ẢNH', url: 'https://baotintuc.vn/anh.rss' },
+    { id: 'infographic', title: 'INFOGRAPHIC', url: 'https://baotintuc.vn/infographics.rss' },
+    { id: 'megastory', title: 'MEGASTORY', url: '#' },
+    { id: 'anh-360', title: 'ẢNH 360', url: '#' },
+    { id: 'talk-show', title: 'TALK SHOW', url: '#' },
+    { id: 'podcast', title: 'PODCAST', url: '#' },
 ];
 
 interface RSSSectionResult extends HomeSection {
@@ -63,10 +95,13 @@ export const fetchFeed = async (rssUrl: string): Promise<{ items: NewsItem[] }> 
     }
 };
 
-export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
-    // Fetch all home sections in parallel
-    const promises = HOME_SECTIONS.map(async (section) => {
+export const fetchSections = async (sections: HomeSection[]): Promise<RSSSectionResult[]> => {
+    const promises = sections.map(async (section) => {
         try {
+            // Handle placeholder URLs
+            if (section.url === '#') {
+                return { ...section, items: [], error: null };
+            }
             const data = await fetchFeed(section.url);
             return {
                 ...section,
@@ -83,4 +118,8 @@ export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
         }
     });
     return Promise.all(promises);
+};
+
+export const fetchAllSections = async (): Promise<RSSSectionResult[]> => {
+    return fetchSections(HOME_SECTIONS);
 };
