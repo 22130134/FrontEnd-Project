@@ -177,25 +177,7 @@ header.container {
         display: none;
         /* Simplify mobile header */
     }
-    .bookmark-link{
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
 
-    .bookmark-badge{
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 18px;
-        height: 18px;
-        padding: 0 6px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #fff;
-        background: #e53935;
-        line-height: 18px;
-    }
+    /* Bookmark link styles removed */
 
 }

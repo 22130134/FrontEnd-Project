@@ -8,7 +8,6 @@ import NewsFeed from "./components/NewsFeed";
 // @ts-ignore
 import EventBar from "./components/EventBar";
 // @ts-ignore
-import BookmarksPage from "./components/BookmarksPage";
 
 import "./components/css/global.css";
 // Import styles from kiet branch
@@ -23,9 +22,12 @@ const globalStyles = `
 `;
 
 // Layout Component implementing Nested Routes & Outlet
+import GlobalPrefetcher from "./components/GlobalPrefetcher";
+
 const MainLayout = () => {
     return (
         <div className="app">
+            <GlobalPrefetcher />
             <style>{globalStyles}</style>
             <Header />
             <EventBar />

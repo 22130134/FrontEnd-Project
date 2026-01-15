@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { fetchNewsByCategory, clearNews } from "../store/newsSlice";
 import NewsList from "./NewsList";
-import StateView from "./StateView";
 import TopNews from "./TopNews";
 import MediaStrip from './MediaStrip';
 import CategoryLayout from './CategoryLayout';
@@ -76,21 +75,18 @@ function NewsFeed() {
     if (showLoading) {
         return (
             <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
-                <StateView state="loading" title="Đang tải tin tức..." message="Vui lòng chờ một chút." />
+                {/* Fallback loading UI if needed, or nothing as requested */}
+                <div style={{ textAlign: "center", fontStyle: "italic", color: "#888" }}>Đang tải tin tức...</div>
             </div>
         );
     }
 
     if (error && news.length === 0) {
         return (
-            <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
-                <StateView
-                    state="error"
-                    title="Không tải được tin tức"
-                    message="Vui lòng thử lại. Nếu vẫn lỗi, có thể dịch vụ RSS đang gặp sự cố."
-                    retryText="Thử lại"
-                    onRetry={() => setRetryKey((k) => k + 1)}
-                />
+            <div className="container" style={{ padding: "40px 0", minHeight: "50vh", textAlign: "center" }}>
+                <div style={{ color: "red", fontWeight: "bold" }}>Không tải được tin tức</div>
+                <p>Vui lòng thử lại. Nếu vẫn lỗi, có thể dịch vụ RSS đang gặp sự cố.</p>
+                <button onClick={() => setRetryKey((k) => k + 1)} style={{ padding: "8px 16px", cursor: "pointer" }}>Thử lại</button>
             </div>
         );
     }
@@ -287,6 +283,10 @@ function NewsFeed() {
                                         }}>
                                             DOANH NGHIỆP - SẢN PHẨM - DỊCH VỤ
                                         </h2>
+                                        {/* DEBUG INFO */}
+                                        <div style={{ fontSize: '10px', color: 'red' }}>
+                                            Items: {doanhNghiepSection.items.length} | Error: {doanhNghiepSection.error || 'None'}
+                                        </div>
                                     </div>
                                     <div className="box-dn-grid" style={{
                                         display: 'grid',

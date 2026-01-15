@@ -2,13 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
-import StateView from './StateView';
 import { CATEGORIES, NewsItem } from '../services/rssService';
-import { isBookmarked, toggleBookmark } from '../services/bookmarkService';
 import type { RootState } from '../store';
 import './css/NewsDetail.css';
 
-const MAX_RETRY = 3;
+// MAX_RETRY removed
 
 const getThumb = (item: NewsItem): string | undefined => {
     let thumb = item.thumbnail || item.enclosure?.link;
@@ -125,19 +123,9 @@ const NewsDetail: React.FC = () => {
 
     //States
     const [fullContent, setFullContent] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<any>(null);
-    const [retryCount, setRetryCount] = useState(0);
-    const [retryKey, setRetryKey] = useState(0);
+    // Removed explicit loading/error states for UI blocking
 
-    // Bookmark state
-    const [saved, setSaved] = useState(false);
-
-    // Reset + check bookmark khi đổi bài
     useEffect(() => {
-        if (activeItem?.link) setSaved(isBookmarked(activeItem.link));
-        setRetryCount(0);
-        setRetryKey(0);
         setFullContent(null);
     }, [activeItem?.link]);
 
@@ -145,51 +133,38 @@ const NewsDetail: React.FC = () => {
     useEffect(() => {
         const loadContent = async () => {
             if (!activeItem?.link) {
-                setLoading(false);
                 return;
             }
 
-            setLoading(true);
-            setError(null);
             try {
+                // Ideally this returns instantly from cache due to GlobalPrefetcher
                 const html = await fetchFullArticle(activeItem.link);
                 const parsed = parseArticleContent(html);
                 setFullContent(parsed);
             } catch (e) {
                 console.error('Lỗi tải bài viết:', e);
-                setError(e);
-            } finally {
-                setLoading(false);
+                // Fail silently or just stay with basic content
             }
         };
 
         loadContent();
-    }, [activeItem?.link, retryKey]);
+    }, [activeItem?.link]);
 
-    const handleToggleSave = () => {
-        if (!activeItem) return;
-        const { saved: nextSaved } = toggleBookmark(activeItem);
-        setSaved(nextSaved);
-    };
-
-    const handleRetry = () => {
-        if (retryCount < MAX_RETRY) {
-            setRetryCount(c => c + 1);
-            setRetryKey(k => k + 1);
-        }
-    };
 
     //RENDER LOGIC
     if (!activeItem) {
         return (
-            <div className="container news-detail-container">
-                <StateView
-                    state="error"
-                    title="Không tìm thấy bài viết"
-                    message="Vui lòng quay lại trang chủ."
-                    retryText="Về trang chủ"
-                    onRetry={() => navigate('/')}
-                />
+            <div className="container news-detail-container" style={{ padding: '40px', textAlign: 'center' }}>
+                <h3>Không tìm thấy bài viết</h3>
+                <button
+                    onClick={() => navigate('/')}
+                    style={{
+                        padding: '8px 16px', marginTop: '10px', cursor: 'pointer',
+                        background: '#d21d21', color: '#fff', border: 'none', borderRadius: '4px'
+                    }}
+                >
+                    Về trang chủ
+                </button>
             </div>
         );
     }
@@ -204,7 +179,7 @@ const NewsDetail: React.FC = () => {
         return stripFirstImage(rawDisplayContent);
     }, [fullContent, rawDisplayContent]);
     // ===== TÁCH SAPO / TIÊU ĐIỂM (đoạn <p> đầu tiên) =====
-// ===== TÁCH SUBTITLE + BODY (KHÔNG TÁCH SAPO) =====
+    // ===== TÁCH SUBTITLE + BODY (KHÔNG TÁCH SAPO) =====
     const { subtitle, bodyFinal } = useMemo(() => {
         if (!cleanedContent) {
             return { subtitle: null, bodyFinal: cleanedContent };
@@ -239,8 +214,7 @@ const NewsDetail: React.FC = () => {
     }, [cleanedContent]);
 
 
-    const showEmpty = !loading && !error && (!cleanedContent || cleanedContent.trim().length === 0);
-    const canRetry = retryCount < MAX_RETRY;
+    const showEmpty = (!cleanedContent || cleanedContent.trim().length === 0);
 
     //Sidebar data (frontend-only)
     const normalizedLink = (l?: string) => (l || '').trim();
@@ -443,14 +417,6 @@ const NewsDetail: React.FC = () => {
                             >
                                 <img src="/media/emaillogo.png" alt="Email" />
                             </a>
-                            <button
-                                className={`fab fab-bookmark ${saved ? 'saved' : ''}`}
-                                onClick={handleToggleSave}
-                                title={saved ? 'Đã lưu bài viết' : 'Lưu bài viết'}
-                                type="button"
-                            >
-                                <span className="fab-icon">{saved ? '🔖' : '📑'}</span>
-                            </button>
 
                         </div>
 
@@ -528,7 +494,9 @@ const NewsDetail: React.FC = () => {
                         {/* MAIN CONTENT */}
                         <div className="detail-body-wrapper">
                             {showEmpty ? (
-                                <StateView state="empty" title="Nội dung trống" message="Bài viết này không có nội dung text." />
+                                <div style={{ padding: '20px 0', color: '#666', fontStyle: 'italic' }}>
+                                    (Không có nội dung text để hiển thị)
+                                </div>
                             ) : (
                                 <article
                                     className="article-body news-content-wrapper"
@@ -536,33 +504,6 @@ const NewsDetail: React.FC = () => {
                                 />
                             )}
                         </div>
-
-                        {/* Loading / Error States */}
-                        {loading && (
-                            <div className="status-area">
-                                <StateView state="loading" compact title="Đang tải toàn bộ nội dung..." />
-                            </div>
-                        )}
-
-                        {!loading && error && (
-                            <div className={`status-area ${(!loading && !error) ? 'status-placeholder' : ''}`}>
-                                {loading ? (
-                                    <StateView state="loading" compact title="Đang tải toàn bộ nội dung..." />
-                                ) : error ? (
-                                    <StateView
-                                        state="error"
-                                        compact
-                                        title="Không tải được nội dung gốc"
-                                        message={canRetry ? 'Đang hiển thị bản tóm tắt RSS.' : 'Vui lòng mở link gốc.'}
-                                        retryText={canRetry ? 'Thử lại tải về' : 'Mở link gốc'}
-                                        onRetry={canRetry ? handleRetry : undefined}
-                                        linkHref={!canRetry ? activeItem.link : undefined}
-                                    />
-                                ) : (
-                                    <div className="status-spacer" />
-                                )}
-                            </div>
-                        )}
 
                         {/* COMMENTS */}
                         <section className="comment-section" aria-label="Bình luận bài viết">
@@ -593,13 +534,13 @@ const NewsDetail: React.FC = () => {
 
 
                                 <div className="comment-row">
-                  <textarea
-                      className="comment-textarea"
-                      value={cText}
-                      onChange={(e) => setCText(e.target.value)}
-                      placeholder="Ý kiến của bạn là..."
-                      maxLength={800}
-                  />
+                                    <textarea
+                                        className="comment-textarea"
+                                        value={cText}
+                                        onChange={(e) => setCText(e.target.value)}
+                                        placeholder="Ý kiến của bạn là..."
+                                        maxLength={800}
+                                    />
                                 </div>
 
                                 <div className="comment-actions">

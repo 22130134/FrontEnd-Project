@@ -5,11 +5,11 @@ import { NewsItem } from '../services/rssService';
 
 interface NewsCardProps {
     item: NewsItem;
-    showRemove?: boolean;
-    onRemove?: (item: NewsItem) => void;
+    // showRemove?: boolean; // REMOVED
+    // onRemove?: (item: NewsItem) => void; // REMOVED
 }
 
-const NewsCard: React.FC<NewsCardProps> = ({ item, showRemove = false, onRemove }) => {
+const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
     // Attempt to parse image from description if RSS doesn't have it directly
     let image = item.thumbnail || item.enclosure?.link;
     if (!image) {
@@ -18,11 +18,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, showRemove = false, onRemove 
     }
     const cleanDesc = item.description?.replace(/<[^>]+>/g, '').trim();
 
-    const handleRemoveClick = (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent Link navigation
-        e.stopPropagation();
-        if (onRemove) onRemove(item);
-    };
+    // handleRemoveClick REMOVED
 
     return (
         <Link
@@ -45,24 +41,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, showRemove = false, onRemove 
                             {item.title}
                         </h3>
 
-                        {showRemove && (
-                            <button
-                                type="button"
-                                className="bookmark-remove-btn"
-                                onClick={handleRemoveClick}
-                                title="Bỏ lưu bài viết"
-                                aria-label="Bỏ lưu bài viết"
-                                style={{
-                                    border: 'none',
-                                    background: 'transparent',
-                                    cursor: 'pointer',
-                                    fontSize: '18px',
-                                    marginLeft: '10px'
-                                }}
-                            >
-                                🗑
-                            </button>
-                        )}
+                        {/* showRemove button REMOVED */}
                     </div>
 
                     <p className="news-card-desc">
@@ -79,13 +58,13 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, showRemove = false, onRemove 
 
 interface NewsListProps {
     items: NewsItem[];
-    // Optional props for Bookmark functionality
-    showRemove?: boolean;
-    onRemove?: (item: NewsItem) => void;
+    // Optional props for Bookmark functionality REMOVED
+    // showRemove?: boolean;
+    // onRemove?: (item: NewsItem) => void;
     // Fallback if Kiet's code passes onArticleClick (we ignore it for Link but keep interface compat if needed, simplified here)
 }
 
-const NewsList: React.FC<NewsListProps> = ({ items, showRemove, onRemove }) => {
+const NewsList: React.FC<NewsListProps> = ({ items }) => {
     if (!items || items.length === 0) return null;
 
     return (
@@ -94,8 +73,8 @@ const NewsList: React.FC<NewsListProps> = ({ items, showRemove, onRemove }) => {
                 <NewsCard
                     key={index}
                     item={item}
-                    showRemove={showRemove}
-                    onRemove={onRemove}
+                // showRemove={showRemove} // REMOVED
+                // onRemove={onRemove} // REMOVED
                 />
             ))}
         </div>
