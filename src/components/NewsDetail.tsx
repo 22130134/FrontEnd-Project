@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { fetchFullArticle, parseArticleContent } from '../services/scraperService';
+import React, {useEffect, useMemo, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {fetchFullArticle, parseArticleContent} from '../services/scraperService';
 import StateView from './StateView';
-import { CATEGORIES, NewsItem } from '../services/rssService';
-import { isBookmarked, toggleBookmark } from '../services/bookmarkService';
-import type { RootState } from '../store';
+import {CATEGORIES, NewsItem} from '../services/rssService';
+import {isBookmarked, toggleBookmark} from '../services/bookmarkService';
+import type {RootState} from '../store';
 import './css/NewsDetail.css';
 
 const MAX_RETRY = 3;
@@ -62,7 +62,7 @@ const stripFirstImage = (html: string) => {
 };
 
 //helper shuffle
-const shuffle = <T,>(arr: T[]) => {
+const shuffle = <T, >(arr: T[]) => {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -87,7 +87,7 @@ const NewsDetail: React.FC = () => {
     const navigate = useNavigate();
 
     // Redux store
-    const { items: storeItems, currentCategory } = useSelector((s: RootState) => s.news);
+    const {items: storeItems, currentCategory} = useSelector((s: RootState) => s.news);
 
     const categoryName = useMemo(() => {
         const found = CATEGORIES.find(c => c.id === currentCategory);
@@ -168,7 +168,7 @@ const NewsDetail: React.FC = () => {
 
     const handleToggleSave = () => {
         if (!activeItem) return;
-        const { saved: nextSaved } = toggleBookmark(activeItem);
+        const {saved: nextSaved} = toggleBookmark(activeItem);
         setSaved(nextSaved);
     };
 
@@ -205,9 +205,9 @@ const NewsDetail: React.FC = () => {
     }, [fullContent, rawDisplayContent]);
     // ===== TÁCH SAPO / TIÊU ĐIỂM (đoạn <p> đầu tiên) =====
 // ===== TÁCH SUBTITLE + BODY (KHÔNG TÁCH SAPO) =====
-    const { subtitle, bodyFinal } = useMemo(() => {
+    const {subtitle, bodyFinal} = useMemo(() => {
         if (!cleanedContent) {
-            return { subtitle: null, bodyFinal: cleanedContent };
+            return {subtitle: null, bodyFinal: cleanedContent};
         }
 
         let html = cleanedContent;
@@ -278,7 +278,7 @@ const NewsDetail: React.FC = () => {
                 const hasThumb = !!getThumb(x);
                 const titleLen = (x.title || '').trim().length;
                 const score = (hasThumb ? 1000 : 0) + Math.min(titleLen, 120);
-                return { x, score };
+                return {x, score};
             })
             .sort((a, b) => b.score - a.score)
             .map(s => s.x);
@@ -392,11 +392,11 @@ const NewsDetail: React.FC = () => {
             <div
                 key={`${x.link || idx}-${idx}`}
                 className="mostread-item"
-                onClick={() => navigate('/news/detail', { state: { item: x } })}
+                onClick={() => navigate('/news/detail', {state: {item: x}})}
             >
                 {thumb && (
                     <div className="mostread-thumb">
-                        <img src={thumb} alt={x.title} />
+                        <img src={thumb} alt={x.title}/>
                     </div>
                 )}
                 <div className="mostread-title">{x.title}</div>
@@ -412,8 +412,9 @@ const NewsDetail: React.FC = () => {
                     <div className="detail-left">
                         {/* Floating share bar */}
                         <div className="detail-float-actions" aria-label="Chia sẻ">
-                            <button className="fab fab-home" onClick={() => navigate('/')} title="Trang chủ" type="button">
-                                <img src="/media/homelogo.png" alt="Trang chủ" />
+                            <button className="fab fab-home" onClick={() => navigate('/')} title="Trang chủ"
+                                    type="button">
+                                <img src="/media/homelogo.png" alt="Trang chủ"/>
                             </button>
 
                             <a
@@ -423,7 +424,7 @@ const NewsDetail: React.FC = () => {
                                 rel="noreferrer"
                                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(activeItem.link)}`}
                             >
-                                <img src="/media/iconfb1.png" alt="Facebook" />
+                                <img src="/media/iconfb1.png" alt="Facebook"/>
                             </a>
 
                             <a
@@ -433,7 +434,7 @@ const NewsDetail: React.FC = () => {
                                 rel="noreferrer"
                                 href={`https://button-share.zalo.me/share_external?d=${encodeURIComponent(activeItem.link)}`}
                             >
-                                <img src="/media/iconzl1.png" alt="Zalo" />
+                                <img src="/media/iconzl1.png" alt="Zalo"/>
                             </a>
 
                             <a
@@ -441,7 +442,7 @@ const NewsDetail: React.FC = () => {
                                 title="Gửi mail"
                                 href={`mailto:?subject=${encodeURIComponent(activeItem.title)}&body=${encodeURIComponent(activeItem.link)}`}
                             >
-                                <img src="/media/emaillogo.png" alt="Email" />
+                                <img src="/media/emaillogo.png" alt="Email"/>
                             </a>
                             <button
                                 className={`fab fab-bookmark ${saved ? 'saved' : ''}`}
@@ -468,7 +469,7 @@ const NewsDetail: React.FC = () => {
                         {subtitle && (
                             <div
                                 className="article-subtitle"
-                                dangerouslySetInnerHTML={{ __html: subtitle }}
+                                dangerouslySetInnerHTML={{__html: subtitle}}
                             />
                         )}
 
@@ -514,7 +515,7 @@ const NewsDetail: React.FC = () => {
                                             <button
                                                 type="button"
                                                 className="related-link"
-                                                onClick={() => navigate('/news/detail', { state: { item: x } })}
+                                                onClick={() => navigate('/news/detail', {state: {item: x}})}
                                                 title={x.title}
                                             >
                                                 {x.title}
@@ -528,11 +529,12 @@ const NewsDetail: React.FC = () => {
                         {/* MAIN CONTENT */}
                         <div className="detail-body-wrapper">
                             {showEmpty ? (
-                                <StateView state="empty" title="Nội dung trống" message="Bài viết này không có nội dung text." />
+                                <StateView state="empty" title="Nội dung trống"
+                                           message="Bài viết này không có nội dung text."/>
                             ) : (
                                 <article
                                     className="article-body news-content-wrapper"
-                                    dangerouslySetInnerHTML={{ __html: bodyFinal }}
+                                    dangerouslySetInnerHTML={{__html: bodyFinal}}
                                 />
                             )}
                         </div>
@@ -540,14 +542,14 @@ const NewsDetail: React.FC = () => {
                         {/* Loading / Error States */}
                         {loading && (
                             <div className="status-area">
-                                <StateView state="loading" compact title="Đang tải toàn bộ nội dung..." />
+                                <StateView state="loading" compact title="Đang tải toàn bộ nội dung..."/>
                             </div>
                         )}
 
                         {!loading && error && (
                             <div className={`status-area ${(!loading && !error) ? 'status-placeholder' : ''}`}>
                                 {loading ? (
-                                    <StateView state="loading" compact title="Đang tải toàn bộ nội dung..." />
+                                    <StateView state="loading" compact title="Đang tải toàn bộ nội dung..."/>
                                 ) : error ? (
                                     <StateView
                                         state="error"
@@ -559,7 +561,7 @@ const NewsDetail: React.FC = () => {
                                         linkHref={!canRetry ? activeItem.link : undefined}
                                     />
                                 ) : (
-                                    <div className="status-spacer" />
+                                    <div className="status-spacer"/>
                                 )}
                             </div>
                         )}

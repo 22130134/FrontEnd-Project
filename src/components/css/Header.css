@@ -177,13 +177,14 @@ header.container {
         display: none;
         /* Simplify mobile header */
     }
-    .bookmark-link{
+
+    .bookmark-link {
         display: inline-flex;
         align-items: center;
         gap: 6px;
     }
 
-    .bookmark-badge{
+    .bookmark-badge {
         display: inline-flex;
         align-items: center;
         justify-content: center;
