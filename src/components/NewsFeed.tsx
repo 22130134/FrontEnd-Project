@@ -19,6 +19,18 @@ interface SectionData extends HomeSection {
     error: string | null;
 }
 
+/**
+ * NewsFeed Component
+ * -------------------
+ * This is the main container for the news feed functionality.
+ * It handles:
+ * 1. Routing parameters (categoryId)
+ * 2. Redux state management (dispatching actions, selecting state)
+ * 3. Local state for home page sections
+ * 4. Data partitioning for different layout areas
+ *
+ * @returns {JSX.Element} The rendered NewsFeed component
+ */
 function NewsFeed() {
     const { categoryId } = useParams();
     const dispatch = useDispatch<AppDispatch>();
@@ -35,10 +47,18 @@ function NewsFeed() {
 
     useEffect(() => {
         // Redux fetch for main list / hero (Tin mới nhất)
+        // ---------------------------------------------------------
+        // Redux Data Fetching Strategy
+        // ---------------------------------------------------------
+        // Validates if the current category exists in our configuration.
+        // If it does, we dispatch the fetch action.
+        // If not (or if invalid), we clear the current news state.
+        // ---------------------------------------------------------
         const category = CATEGORIES.find((c) => c.id === activeCategory);
         if (category) {
             dispatch(fetchNewsByCategory({ url: category.url, categoryId: activeCategory }));
         } else {
+            console.warn(`[NewsFeed] Invalid category ID: ${activeCategory}`); // Added logging for debug
             dispatch(clearNews());
         }
 
@@ -91,7 +111,18 @@ function NewsFeed() {
         );
     }
 
-    // Helper for images
+    // --------------------------------------------------------------------------
+    // Helper Function: getImage
+    // --------------------------------------------------------------------------
+    // Determines the best available image for a news item.
+    // Logic flow:
+    // 1. Check for 'enclosure' tag (standard RSS media).
+    // 2. Check for 'thumbnail' property.
+    // 3. Regex parse 'description' HTML for <img src="...">.
+    // 4. Regex parse 'content' HTML for <img src="...">.
+    // 5. Check for YouTube video links to generate thumbnail.
+    // 6. Fallback to placeholder if all else fails.
+    // --------------------------------------------------------------------------
     const getImage = (item: NewsItem) => {
         // 1. Check enclosure: ensure it's an image. If it's a video (mp4, etc), do NOT use as image.
         if (item.enclosure && item.enclosure.link) {
@@ -152,7 +183,14 @@ function NewsFeed() {
     // Doanh Nghiệp (Bottom)
     const doanhNghiepSection = homeSections.find(s => s.id === 'kinh-te');
 
-    // Render Logic
+    // ----------------------------------------------------------------------
+    // RENDER EXECUTION
+    // ----------------------------------------------------------------------
+    // The component structure differs based on 'activeCategory':
+    // - HOME: Complex layout with TopNews, Multimedia, Content Center (Left/Right), etc.
+    // - VIDEO: Special layout using CategoryLayout.
+    // - OTHER: Standard two-column layout (NewsList + Sidebar).
+    // ----------------------------------------------------------------------
     return (
         <>
             {/* 1. TOP NEWS (Home Only) */}
