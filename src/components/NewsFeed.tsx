@@ -1,17 +1,23 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
-import { fetchNewsByCategory, clearNews } from "../store/newsSlice";
+import {useEffect, useState} from "react";
+import {useParams, Link} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../store";
+import {fetchNewsByCategory, clearNews} from "../store/newsSlice";
 import NewsList from "./NewsList";
 import TopNews from "./TopNews";
-import MediaStrip from './MediaStrip';
 import CategoryLayout from './CategoryLayout';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { CATEGORIES, fetchAllSections, fetchSections, NewsItem, HomeSection, MULTIMEDIA_SECTIONS } from "../services/rssService";
+import {
+    CATEGORIES,
+    fetchAllSections,
+    fetchSections,
+    NewsItem,
+    HomeSection,
+    MULTIMEDIA_SECTIONS
+} from "../services/rssService";
 import CategoryBlock from "./CategoryBlock";
 
 interface SectionData extends HomeSection {
@@ -32,13 +38,13 @@ interface SectionData extends HomeSection {
  * @returns {JSX.Element} The rendered NewsFeed component
  */
 function NewsFeed() {
-    const { categoryId } = useParams();
+    const {categoryId} = useParams();
     const dispatch = useDispatch<AppDispatch>();
 
     const activeCategory = categoryId || 'home';
 
     // Redux State
-    const { items: news, loading, error } = useSelector((state: RootState) => state.news);
+    const {items: news, loading, error} = useSelector((state: RootState) => state.news);
     const [retryKey, setRetryKey] = useState(0);
 
     // Local State for Home Sections
@@ -56,7 +62,7 @@ function NewsFeed() {
         // ---------------------------------------------------------
         const category = CATEGORIES.find((c) => c.id === activeCategory);
         if (category) {
-            dispatch(fetchNewsByCategory({ url: category.url, categoryId: activeCategory }));
+            dispatch(fetchNewsByCategory({url: category.url, categoryId: activeCategory}));
         } else {
             console.warn(`[NewsFeed] Invalid category ID: ${activeCategory}`); // Added logging for debug
             dispatch(clearNews());
@@ -195,10 +201,10 @@ function NewsFeed() {
         <>
             {/* 1. TOP NEWS (Home Only) */}
             {activeCategory === 'home' && (
-                <TopNews items={topNewsItems} />
+                <TopNews items={topNewsItems}/>
             )}
 
-            <main className="home-content" style={{ minHeight: '60vh', paddingBottom: '40px' }}>
+            <main className="home-content" style={{minHeight: '60vh', paddingBottom: '40px'}}>
                 <div className="content_wrapper w1040">
 
                     {/* 2. Category Header (Sub-pages Only) */}
@@ -225,7 +231,8 @@ function NewsFeed() {
                                     <h2><span>Media</span></h2>
                                     <ul className="ct-threadbar_list">
                                         {MULTIMEDIA_SECTIONS.map(s => (
-                                            <li className="item" key={s.id}><Link to={`/category/${s.id}`}>{s.title}</Link></li>
+                                            <li className="item" key={s.id}><Link
+                                                to={`/category/${s.id}`}>{s.title}</Link></li>
                                         ))}
                                     </ul>
                                 </div>
@@ -238,19 +245,31 @@ function NewsFeed() {
                                         className="list-ul"
                                     >
                                         {contentTopItems.map((item, idx) => (
-                                            <SwiperSlide key={idx} className="li-item" style={{ width: '270px' }}>
-                                                <Link to="/news/detail" state={{ item }} className="item_thumb" style={{ position: 'relative', display: 'block' }}>
-                                                    <img src={getImage(item)} alt={cleanTitle(item.title)} />
+                                            <SwiperSlide key={idx} className="li-item" style={{width: '270px'}}>
+                                                <Link to="/news/detail" state={{item}} className="item_thumb"
+                                                      style={{position: 'relative', display: 'block'}}>
+                                                    <img src={getImage(item)} alt={cleanTitle(item.title)}/>
                                                     <div className="icon-play" style={{
-                                                        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                                                        width: '40px', height: '40px', background: 'rgba(0,0,0,0.6)', borderRadius: '50%',
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2
+                                                        position: 'absolute',
+                                                        top: '50%',
+                                                        left: '50%',
+                                                        transform: 'translate(-50%, -50%)',
+                                                        width: '40px',
+                                                        height: '40px',
+                                                        background: 'rgba(0,0,0,0.6)',
+                                                        borderRadius: '50%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        zIndex: 2
                                                     }}>
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                                                            <path d="M8 5v14l11-7z"/>
+                                                        </svg>
                                                     </div>
                                                     <span className="note">VIDEO</span>
                                                 </Link>
-                                                <Link to="/news/detail" state={{ item }} className="item_title">
+                                                <Link to="/news/detail" state={{item}} className="item_title">
                                                     {cleanTitle(item.title)}
                                                 </Link>
                                             </SwiperSlide>
@@ -266,12 +285,12 @@ function NewsFeed() {
                                     <ul className="list-ccl">
                                         {tinNongItems.map((item, index) => (
                                             <li className="ccl-item" key={index}>
-                                                <Link to="/news/detail" state={{ item }} className="item_thumb">
-                                                    <img src={getImage(item)} alt={cleanTitle(item.title)} />
+                                                <Link to="/news/detail" state={{item}} className="item_thumb">
+                                                    <img src={getImage(item)} alt={cleanTitle(item.title)}/>
                                                 </Link>
                                                 <div className="item_info">
                                                     <Link to={`/category/thoi-su`} className="item_cat">Thời sự</Link>
-                                                    <Link to="/news/detail" state={{ item }} className="item_title">
+                                                    <Link to="/news/detail" state={{item}} className="item_title">
                                                         {cleanTitle(item.title)}
                                                     </Link>
                                                 </div>
@@ -305,8 +324,8 @@ function NewsFeed() {
 
                             {/* DOANH NGHIỆP - SẢN PHẨM - DỊCH VỤ (Full Width Section) */}
                             {doanhNghiepSection && (
-                                <div className="doanh-nghiep-section" style={{ marginTop: '30px', clear: 'both' }}>
-                                    <div className="dn-header" style={{ position: 'relative' }}>
+                                <div className="doanh-nghiep-section" style={{marginTop: '30px', clear: 'both'}}>
+                                    <div className="dn-header" style={{position: 'relative'}}>
                                         <h2 style={{
                                             background: '#d21d21',
                                             color: '#fff',
@@ -334,10 +353,12 @@ function NewsFeed() {
                                     }}>
                                         {doanhNghiepSection.items.slice(0, 4).map((item, idx) => (
                                             <div key={idx}>
-                                                <Link to="/news/detail" state={{ item }} style={{ display: 'block', overflow: 'hidden', height: '160px' }}>
-                                                    <img src={getImage(item)} alt={cleanTitle(item.title)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                <Link to="/news/detail" state={{item}}
+                                                      style={{display: 'block', overflow: 'hidden', height: '160px'}}>
+                                                    <img src={getImage(item)} alt={cleanTitle(item.title)}
+                                                         style={{width: '100%', height: '100%', objectFit: 'cover'}}/>
                                                 </Link>
-                                                <Link to="/news/detail" state={{ item }} style={{
+                                                <Link to="/news/detail" state={{item}} style={{
                                                     display: 'block',
                                                     marginTop: '10px',
                                                     fontSize: '14px',
@@ -355,7 +376,7 @@ function NewsFeed() {
                         </>
                     ) : activeCategory === 'video' ? (
                         // --- VIDEO CATEGORY VIEW ---
-                        <div style={{ marginTop: '20px' }}>
+                        <div style={{marginTop: '20px'}}>
                             <CategoryLayout
                                 title={CATEGORIES.find(c => c.id === activeCategory)?.name || ''}
                                 items={categoryFeedItems}
@@ -364,21 +385,16 @@ function NewsFeed() {
                     ) : (
                         // --- STANDARD CATEGORY VIEW ---
                         <div className="content_center">
-                            <div className="main-layout" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+                            <div className="main-layout"
+                                 style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px'}}>
                                 <div className="content-col">
-                                    <NewsList items={categoryFeedItems} />
+                                    <NewsList items={categoryFeedItems}/>
                                 </div>
                                 <div className="sidebar-col">
                                     {/* Sidebar for standard categories */}
                                 </div>
                             </div>
                         </div>
-                    )}
-
-                    {/* Partner Section (Home Only) */}
-                    {/* Partner Section (Home Only) */}
-                    {activeCategory === 'home' && (
-                        <MediaStrip />
                     )}
                 </div>
             </main>

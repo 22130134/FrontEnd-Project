@@ -13,7 +13,7 @@ import "./components/css/global.css";
 // Import styles from kiet branch
 import "./components/css/baotintuc.css";
 import "./components/css/swiper.css";
-import TTXVNMediaStrip from "./components/TTXVNMediaStrip";
+import MediaStrip from './components/MediaStrip';
 // Hide ads globally (from kiet branch)
 const globalStyles = `
   #zone-483788, #adnzone_483787, .box40nam, #placment-l9f4wxy1, #divpopup01, #divpopup02, #divwebrightfix, #divwebleffix {
@@ -32,6 +32,7 @@ const MainLayout = () => {
             <Header />
             <EventBar />
             <Outlet />
+            <MediaStrip/>
             <Footer />
         </div>
     );
