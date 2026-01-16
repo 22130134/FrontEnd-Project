@@ -12,27 +12,27 @@
 }
 
 /*LAYOUT*/
-.detail-content > .detail-content_wrapper {
+.detail-content>.detail-content_wrapper {
     display: grid !important;
     gap: 8px;
     align-items: start;
 }
 
-.detail-content > .detail-content_wrapper > .detail-left {
+.detail-content>.detail-content_wrapper>.detail-left {
     position: relative;
     min-width: 0;
     width: 100%;
 }
 
 /* Sidebar */
-.detail-content > .detail-content_wrapper > .right-bar {
+.detail-content>.detail-content_wrapper>.right-bar {
     position: relative;
     width: 300px;
 }
 
 /* Sticky only desktop */
 @media (min-width: 1024px) {
-    .detail-content > .detail-content_wrapper > .right-bar {
+    .detail-content>.detail-content_wrapper>.right-bar {
         position: sticky;
         top: 16px;
     }
@@ -101,32 +101,7 @@
 }
 
 /* Bookmark */
-.bookmark-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    background: #f9f9f9;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: #555;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    height: fit-content;
-}
-
-.bookmark-btn:hover {
-    background: #eee;
-}
-
-.bookmark-btn.saved {
-    background: #fff8e1;
-    border-color: #ffecb3;
-    color: #f57f17;
-}
+/* Bookmark styles removed */
 
 /* Floating share */
 .detail-float-actions {
@@ -164,7 +139,8 @@
 }
 
 
-/*ARTICLE BODY*//*ARTICLE BODY*/
+/*ARTICLE BODY*/
+/*ARTICLE BODY*/
 .article-body {
     width: 100% !important;
     max-width: 100% !important;
@@ -431,7 +407,7 @@
 
 /*RESPONSIVE*/
 @media (max-width: 1200px) {
-    .detail-content > .detail-content_wrapper {
+    .detail-content>.detail-content_wrapper {
         grid-template-columns: minmax(0, 1fr) 300px;
     }
 
@@ -441,11 +417,11 @@
 }
 
 @media (max-width: 1024px) {
-    .detail-content > .detail-content_wrapper {
+    .detail-content>.detail-content_wrapper {
         grid-template-columns: 1fr;
     }
 
-    .detail-content > .detail-content_wrapper > .right-bar {
+    .detail-content>.detail-content_wrapper>.right-bar {
         margin-top: 14px;
         position: static;
         width: 100%;
@@ -486,14 +462,14 @@
 /*FIX XUNG ĐỘT .detail-content_wrapper (grid vs flex)*/
 
 /*Wrapper layout ngoài cùng*/
-.detail-content > .detail-content_wrapper {
+.detail-content>.detail-content_wrapper {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 300px !important;
     gap: 6px !important;
     align-items: start !important;
 }
 
-.detail-content > .detail-content_wrapper {
+.detail-content>.detail-content_wrapper {
     display: grid !important;
 }
 
@@ -505,16 +481,16 @@
 }
 
 /*Cột trái (cột nội dung bài báo) không bị bó*/
-.detail-content > .detail-content_wrapper > .detail-left {
+.detail-content>.detail-content_wrapper>.detail-left {
     min-width: 0 !important;
     width: 100% !important;
 }
 
-.detail-content > .detail-content_wrapper > .right-bar {
+.detail-content>.detail-content_wrapper>.right-bar {
     width: 300px !important;
 }
 
-.detail-content > .detail-content_wrapper {
+.detail-content>.detail-content_wrapper {
     gap: 20px !important;
 }
 
@@ -780,4 +756,3 @@
     object-fit: contain;
     cursor: pointer;
 }
-

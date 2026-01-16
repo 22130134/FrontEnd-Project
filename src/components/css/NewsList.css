@@ -82,27 +82,7 @@
     gap: 10px;
 }
 
-.bookmark-remove-btn {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-    transition: opacity 0.2s ease, transform 0.15s ease;
-    flex-shrink: 0;
-    /* Optional: hide slightly until hover on desktop? */
-    opacity: 0.5;
-}
-
-.news-card:hover .bookmark-remove-btn {
-    opacity: 1;
-}
-
-.bookmark-remove-btn:hover {
-    opacity: 1;
-    transform: scale(1.05);
-    color: #d21d21;
-}
+/* Bookmark remove btn styles removed */
 
 @media (max-width: 600px) {
     .news-card-inner {

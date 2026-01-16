@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../store";
 import {fetchNewsByCategory, clearNews} from "../store/newsSlice";
 import NewsList from "./NewsList";
-import StateView from "./StateView";
 import TopNews from "./TopNews";
 import CategoryLayout from './CategoryLayout';
 import {Swiper, SwiperSlide} from 'swiper/react';
@@ -26,6 +25,18 @@ interface SectionData extends HomeSection {
     error: string | null;
 }
 
+/**
+ * NewsFeed Component
+ * -------------------
+ * This is the main container for the news feed functionality.
+ * It handles:
+ * 1. Routing parameters (categoryId)
+ * 2. Redux state management (dispatching actions, selecting state)
+ * 3. Local state for home page sections
+ * 4. Data partitioning for different layout areas
+ *
+ * @returns {JSX.Element} The rendered NewsFeed component
+ */
 function NewsFeed() {
     const {categoryId} = useParams();
     const dispatch = useDispatch<AppDispatch>();
@@ -42,10 +53,18 @@ function NewsFeed() {
 
     useEffect(() => {
         // Redux fetch for main list / hero (Tin mới nhất)
+        // ---------------------------------------------------------
+        // Redux Data Fetching Strategy
+        // ---------------------------------------------------------
+        // Validates if the current category exists in our configuration.
+        // If it does, we dispatch the fetch action.
+        // If not (or if invalid), we clear the current news state.
+        // ---------------------------------------------------------
         const category = CATEGORIES.find((c) => c.id === activeCategory);
         if (category) {
             dispatch(fetchNewsByCategory({url: category.url, categoryId: activeCategory}));
         } else {
+            console.warn(`[NewsFeed] Invalid category ID: ${activeCategory}`); // Added logging for debug
             dispatch(clearNews());
         }
 
@@ -81,27 +100,35 @@ function NewsFeed() {
 
     if (showLoading) {
         return (
-            <div className="container" style={{padding: "40px 0", minHeight: "50vh"}}>
-                <StateView state="loading" title="Đang tải tin tức..." message="Vui lòng chờ một chút."/>
+            <div className="container" style={{ padding: "40px 0", minHeight: "50vh" }}>
+                {/* Fallback loading UI if needed, or nothing as requested */}
+                <div style={{ textAlign: "center", fontStyle: "italic", color: "#888" }}>Đang tải tin tức...</div>
             </div>
         );
     }
 
     if (error && news.length === 0) {
         return (
-            <div className="container" style={{padding: "40px 0", minHeight: "50vh"}}>
-                <StateView
-                    state="error"
-                    title="Không tải được tin tức"
-                    message="Vui lòng thử lại. Nếu vẫn lỗi, có thể dịch vụ RSS đang gặp sự cố."
-                    retryText="Thử lại"
-                    onRetry={() => setRetryKey((k) => k + 1)}
-                />
+            <div className="container" style={{ padding: "40px 0", minHeight: "50vh", textAlign: "center" }}>
+                <div style={{ color: "red", fontWeight: "bold" }}>Không tải được tin tức</div>
+                <p>Vui lòng thử lại. Nếu vẫn lỗi, có thể dịch vụ RSS đang gặp sự cố.</p>
+                <button onClick={() => setRetryKey((k) => k + 1)} style={{ padding: "8px 16px", cursor: "pointer" }}>Thử lại</button>
             </div>
         );
     }
 
-    // Helper for images
+    // --------------------------------------------------------------------------
+    // Helper Function: getImage
+    // --------------------------------------------------------------------------
+    // Determines the best available image for a news item.
+    // Logic flow:
+    // 1. Check for 'enclosure' tag (standard RSS media).
+    // 2. Check for 'thumbnail' property.
+    // 3. Regex parse 'description' HTML for <img src="...">.
+    // 4. Regex parse 'content' HTML for <img src="...">.
+    // 5. Check for YouTube video links to generate thumbnail.
+    // 6. Fallback to placeholder if all else fails.
+    // --------------------------------------------------------------------------
     const getImage = (item: NewsItem) => {
         // 1. Check enclosure: ensure it's an image. If it's a video (mp4, etc), do NOT use as image.
         if (item.enclosure && item.enclosure.link) {
@@ -162,7 +189,14 @@ function NewsFeed() {
     // Doanh Nghiệp (Bottom)
     const doanhNghiepSection = homeSections.find(s => s.id === 'kinh-te');
 
-    // Render Logic
+    // ----------------------------------------------------------------------
+    // RENDER EXECUTION
+    // ----------------------------------------------------------------------
+    // The component structure differs based on 'activeCategory':
+    // - HOME: Complex layout with TopNews, Multimedia, Content Center (Left/Right), etc.
+    // - VIDEO: Special layout using CategoryLayout.
+    // - OTHER: Standard two-column layout (NewsList + Sidebar).
+    // ----------------------------------------------------------------------
     return (
         <>
             {/* 1. TOP NEWS (Home Only) */}
@@ -306,6 +340,10 @@ function NewsFeed() {
                                         }}>
                                             DOANH NGHIỆP - SẢN PHẨM - DỊCH VỤ
                                         </h2>
+                                        {/* DEBUG INFO */}
+                                        <div style={{ fontSize: '10px', color: 'red' }}>
+                                            Items: {doanhNghiepSection.items.length} | Error: {doanhNghiepSection.error || 'None'}
+                                        </div>
                                     </div>
                                     <div className="box-dn-grid" style={{
                                         display: 'grid',
